@@ -7,5 +7,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Task extends Model
 {
-    
+    public function user() : HasMany{
+        return $this->hasMany(User::class);
+    }
 }
