@@ -13,11 +13,22 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('neptun')->unique();
+            $table->string('name');
+            $table->string('email')->unique();
+            $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->string('role');
-            $table->foreignId(\App\Models\User::class,'created_by');
+            $table->rememberToken();
+            $table->json('role'); //array
             $table->timestamps();
+            
+            $table->unsignedBigInteger('created_by')->nullable();
+
+            // Define foreign key constraint
+            $table->foreign('created_by')
+                  ->references('id')
+                  ->on('users')
+                  ->onDelete('set null');
+
         });
     }
     /**

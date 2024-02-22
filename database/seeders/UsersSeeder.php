@@ -14,17 +14,17 @@ class UsersSeeder extends Seeder
     public function run(): void
     {
         \App\Models\User::create([
-            'neptun'=>'S98PBH',
+            'email'=>'S98PBH@pte.hu',
             'password'=>Hash::make('S98PBHS98PBH'),
             'role'=>'system admin',
         ]);
         \App\Models\User::create([
-            'neptun'=>'CVBN123',
+            'email'=>'CVBN123@pte.hu',
             'password'=>Hash::make('CVBN123CVBN123'),
             'role'=>'project admin',
         ]);
         \App\Models\User::create([
-            'neptun'=>'QWER123',
+            'email'=>'QWER123@pte.hu',
             'password'=>Hash::make('QWER123QWER123'),
             'role'=>'user',
         ]);
