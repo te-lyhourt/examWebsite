@@ -1,0 +1,6 @@
+composer install --no-interaction --no-dev --perfer-dist --optimize-autoloader
+php artisan migrate --force
+php artisan cach:clear
+php artisan config:cache
+npm install
+npm build
