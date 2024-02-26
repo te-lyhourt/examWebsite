@@ -3,9 +3,9 @@
             <div class="px-3">
                 <CreateNewDropDown/>
                 <div class="py-3 grid justify-items-stretch">
-                    <NavLink href="/" :active="$page.url == '/dashboard'">USER</NavLink>
-                    <NavLink href="/">GROUP</NavLink>
+                    <NavLink href="/" :active="$page.url == '/dashboard'">GROUP</NavLink>
                     <NavLink href="/">PROJECT</NavLink>
+                    <NavLink :href="route('page.user')">USER</NavLink>
                 </div>
             </div>
         </nav>

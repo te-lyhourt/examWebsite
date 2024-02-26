@@ -22,9 +22,13 @@
             </div>
 
             <!-- Page Content -->
-            <main class="flex mt-5">
-                <Navigation></Navigation>
-                <slot />
+            <main class="flex justify-content-stretch">
+                <div class="flex mt-5">
+                    <Navigation></Navigation>
+                </div>
+                <div class="w-full">
+                    <slot />
+                </div>
             </main>
         </div>
     </div>
