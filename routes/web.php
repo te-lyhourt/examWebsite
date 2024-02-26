@@ -1,24 +1,18 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
-// use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use Illuminate\Support\Facades\Auth;
 
-
-// Route::get('/', function () {
-//     return Inertia::render('Welcome', [
-//         'canLogin' => Route::has('login'),
-//         'canRegister' => Route::has('register'),
-//         'laravelVersion' => Application::VERSION,
-//         'phpVersion' => PHP_VERSION,
-//     ]);
-// });
-
-Route::get('/', function () {
-    return Inertia::render('Auth/Login',[
-        'canLogin' => Route::has('login')
-    ]);
+Route::get('/', function(){
+    if (Auth::check()) {
+        return redirect()->route('dashboard');
+    }
+    else{
+        return Inertia::render('Auth/Login');
+    }
 });
 
 Route::get('/dashboard', function () {

@@ -47,7 +47,16 @@ import Checkbox from '@/Components/Checkbox.vue';
 import InputError from '@/Components/InputError.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
-import { Head, useForm } from '@inertiajs/vue3';
+import { Head, useForm ,usePage} from '@inertiajs/vue3';
+import { onMounted } from 'vue';
+
+onMounted(() => {
+    const page = usePage();
+        // Redirect to dashboard if user is logged in
+    if (page.props.auth.user) {
+        route('dashboard')
+    }
+});
 
 const form = useForm({
     email: '',
@@ -56,7 +65,7 @@ const form = useForm({
 });
 
 const submit = () => {
-    form.post(route('login'), {
+    form.post(route('user.login'), {
         onFinish: () => form.reset('password'),
     });
 };
