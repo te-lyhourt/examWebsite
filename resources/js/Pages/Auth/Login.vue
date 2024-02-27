@@ -52,7 +52,7 @@ import { onMounted } from 'vue';
 
 onMounted(() => {
     const page = usePage();
-        // Redirect to dashboard if user is logged in
+    // Redirect to dashboard if user is logged in
     if (page.props.auth.user) {
         route('dashboard')
     }
@@ -63,7 +63,7 @@ const form = useForm({
     password: '',
     remember: false,
 });
-
+//submit form function
 const submit = () => {
     form.post(route('user.login'), {
         onFinish: () => form.reset('password'),
