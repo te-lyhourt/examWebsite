@@ -8,6 +8,7 @@ use Attribute;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Symfony\Component\Console\Question\Question;
 
 class User extends Authenticatable
 {
@@ -16,10 +17,10 @@ class User extends Authenticatable
 
     //relationship user has many project,task and answer
     public function project() : HasMany{
-        return $this->hasMany(Project::class);
+        return $this->hasMany(Projects::class);
     }
-    public function task() : HasMany{
-        return $this->hasMany(Task::class);
+    public function question() : HasMany{
+        return $this->hasMany(Question::class);
     }
     public function answer() : HasMany{
         return $this->hasMany(Answer::class);
@@ -30,10 +31,12 @@ class User extends Authenticatable
      *
      * @var array<int, string>
      */
+    //decide what can be fill when create user
     protected $fillable = [
         'email',
         'password',
         'role',
+        'created_by',
     ];
 
     /**

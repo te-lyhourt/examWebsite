@@ -19,14 +19,17 @@ return new class extends Migration
             $table->rememberToken();
             $table->json('role'); //array
             $table->timestamps();
-            $table->unsignedBigInteger('created_by')->nullable();
 
-            // Define foreign key constraint
-            $table->foreign('created_by')
-                  ->references('id')
-                  ->on('users')
-                  ->onDelete('set null');
+            $table->foreignId('created_by')->nullable()->constrained('users')->onDelete('set null');
 
+            // $table->unsignedBigInteger('created_by')->nullable();
+
+            // // Define foreign key constraint
+            // $table->foreign('created_by')
+            //       ->references('id')
+            //       ->on('users')
+            //       ->onDelete('set null');
+            
         });
     }
     /**

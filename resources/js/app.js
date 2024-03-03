@@ -1,6 +1,6 @@
 import './bootstrap';
 import '../css/app.css';
-import '../js/bootstrap/bootstrap.min.js'
+import 'bootstrap'
 
 import { createApp, h } from 'vue';
 import { createInertiaApp } from '@inertiajs/vue3';

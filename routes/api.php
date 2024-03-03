@@ -10,5 +10,3 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 //USER API
-
-Route::get('/user/all',[UserController::class,'all_user'])->name('user.all');

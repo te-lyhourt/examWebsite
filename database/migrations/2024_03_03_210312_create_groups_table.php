@@ -11,20 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('project', function (Blueprint $table) {
+        Schema::create('groups', function (Blueprint $table) {
             $table->id();
-            $table->foreignId(\App\Models\User::class,'created_by');
-            $table->integer('numRepeat');
+            $table->string('name');
+            $table->foreignIdFor(\App\Models\User::class,'created_by');
             $table->timestamps();
         });
     }
-    // public function user
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('project');
+        Schema::dropIfExists('groups');
     }
 };
