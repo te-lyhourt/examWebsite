@@ -29,8 +29,12 @@ Route::middleware('auth')->group(function () {
 
     //project
     Route::get('/project',[ProjectController::class,'index'])->name('page.project');
+    Route::post('/project/add',[ProjectController::class,'store'])->name('project.add');
+
     //group 
     Route::get('/group',[GroupController::class,'index'])->name('page.group');
+    Route::post('/group/add',[GroupController::class,'store'])->name('group.add');
+
     // Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     // Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     // Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');

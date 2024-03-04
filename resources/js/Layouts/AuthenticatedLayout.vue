@@ -2,6 +2,7 @@
     <div>
         <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
             <div class="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
+                <!-- top bar -->
                 <div class="flex justify-between max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <header class="bg-white dark:bg-gray-800" v-if="$slots.header">
                         <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 ">
@@ -9,10 +10,10 @@
                         </div>
                     </header>
                     <div class="flex items-center ms-6 justify-end">
-                        <!-- Settings Dropdown -->
+                        
                         <div class="font-medium text-sm text-gray-500 mr-2 inline-block">{{ $page.props.auth.user.email }}
                         </div>
-                        <NavDropdown>
+                        <NavDropdown class="option" text="GO TO">
 
                         </NavDropdown>
 
@@ -29,7 +30,8 @@
 
             <!-- Page Content -->
             <main class="flex justify-content-stretch">
-                <div class="flex mt-5">
+                <!-- side bar -->
+                <div class="flex mt-5 sidebar">
                     <Navigation></Navigation>
                 </div>
                 <div class="w-full">
@@ -47,5 +49,17 @@ import NavDropdown from '@/Components/app/NavDropdown.vue'
 <style scoped>
 .h-btn {
     height: 35px;
+}
+.option {
+    display: none; /* Hide the content */
+}
+
+@media (max-width: 790px) {
+  .sidebar {
+    display: none; /* Hide the content */
+  }
+  .option {
+    display: block; /* Hide the content */
+  }
 }
 </style>

@@ -4,7 +4,7 @@
             <MenuButton
                 class="h-btn mr-2 flex items-center px-4 py-2 bg-gray-800 dark:bg-gray-200 border border-transparent rounded-md font-semibold text-xs text-white dark:text-gray-800 tracking-widest hover:bg-gray-700 dark:hover:bg-white active:bg-gray-900 dark:active:bg-gray-300transition ease-in-out duration-150"
             >
-                {{ text }}
+                +
                 <ChevronDownIcon
                     class="-mr-1 h-5 w-5 text-gray-400"
                     aria-hidden="true"
@@ -73,9 +73,6 @@
 <script setup>
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
 import { ChevronDownIcon } from "@heroicons/vue/20/solid";
-defineProps({
-  text: String,
-});
 </script>
 <style scoped>
 .h-btn {

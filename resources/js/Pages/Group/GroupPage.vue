@@ -2,18 +2,18 @@
     <Dashboard>
         <div>
             <div>
-                <Head title="User" />
+                <Head title="Group" />
                 <h2
                     class="mb-4 mt-4 font-medium text-5xl text-gray-700 dark:text-gray-300 grid place-content-center"
                 >
-                    User List
+                    Group List
                 </h2>
             </div>
             <div class="flex justify-end mr-4">
                 <Dialog>
                     <DialogTrigger as-child>
                         <Button variant="outline" class="buttonStyle">
-                            ADD USER
+                            Create New Group
                         </Button>
                     </DialogTrigger>
                     <DialogContent
@@ -22,7 +22,7 @@
                         <DialogHeader class="p-6 pt-0">
                             <DialogTitle
                                 class="text-gray-800 dark:text-white text-center text-3xl"
-                                >Create New User</DialogTitle
+                                >Create New Group</DialogTitle
                             >
                         </DialogHeader>
                         <CardContent>
@@ -31,7 +31,7 @@
                                     <div class="flex flex-col space-y-1.5">
                                         <span
                                             class="block font-medium text-sm text-gray-800 dark:text-white"
-                                            >Email
+                                            >Group Name
                                             <span style="color: red"
                                                 >*</span
                                             ></span
@@ -39,74 +39,15 @@
                                         <TextInput
                                             id="email"
                                             class="mt-1 block w-full"
-                                            v-model="form.email"
+                                            v-model="form.name"
                                             required
                                             autofocus
                                             autocomplete="username"
                                         />
                                         <InputError
                                             class="mt-2"
-                                            :message="form.errors.email"
+                                            :message="form.errors.name"
                                         />
-                                    </div>
-                                    <div class="flex flex-col space-y-1.5">
-                                        <span
-                                            class="block font-medium text-sm text-gray-800 dark:text-white"
-                                            >Password
-                                            <span style="color: red">*</span>
-                                        </span>
-                                        <TextInput
-                                            id="password"
-                                            type="password"
-                                            class="mt-1 block w-full"
-                                            v-model="form.password"
-                                            required
-                                            autocomplete="current-password"
-                                        />
-                                        <InputError
-                                            class="mt-2"
-                                            :message="pw8"
-                                        />
-                                        <InputError
-                                            class="mt-2"
-                                            :message="form.errors.password"
-                                        />
-                                    </div>
-                                    <div class="flex flex-col space-y-1.5">
-                                        <Label
-                                            for="framework"
-                                            class="text-gray-800 dark:text-white"
-                                            >Role
-                                            <span style="color: red">*</span>
-                                        </Label>
-                                        <Select v-model="form.role">
-                                            <SelectTrigger
-                                                id="framework"
-                                                class="py-1.5 pl-8 pr-2 text-sm bg-white border-black dark:border-gray-700 dark:bg-gray-700 dark:text-gray-300"
-                                            >
-                                                <SelectValue
-                                                    placeholder="Select User Role"
-                                                />
-                                            </SelectTrigger>
-                                            <SelectContent
-                                                position="popper"
-                                                class="bg-white border-black dark:border-gray-700 dark:bg-gray-700 dark:text-gray-300"
-                                            >
-                                                <SelectItem
-                                                    value="system admin"
-                                                >
-                                                    SYSTEM ADMIN
-                                                </SelectItem>
-                                                <SelectItem
-                                                    value="project admin"
-                                                >
-                                                    PROJECT ADMIN
-                                                </SelectItem>
-                                                <SelectItem value="user">
-                                                    USER
-                                                </SelectItem>
-                                            </SelectContent>
-                                        </Select>
                                     </div>
                                 </div>
                                 <div class="flex justify-end mt-6">
@@ -129,7 +70,7 @@
                                             variant="secondary"
                                             class="ml-6 bg-gray-800 dark:bg-gray-200 text-xs text-white dark:text-gray-800 hover:bg-gray-700 dark:hover:bg-white hover:text-white dark:hover:text-gray-800"
                                         >
-                                            ADD USER
+                                            ADD GROUP
                                         </Button>
                                     </DialogFooter>
                                 </div>
@@ -143,11 +84,8 @@
                     <!-- <TableCaption>A list of your recent invoices.</TableCaption> -->
                     <TableHeader>
                         <TableRow>
-                            <TableHead class="w-[100px] px-5">
-                                USER ID
-                            </TableHead>
-                            <TableHead>USER Email</TableHead>
-                            <TableHead class="text-center">USER Role</TableHead>
+                            <TableHead class="w-[100px] px-5"> GROUP ID </TableHead>
+                            <TableHead>GROUP Name</TableHead>
                             <TableHead class="text-center">
                                 Created At
                             </TableHead>
@@ -157,30 +95,20 @@
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        <TableRow v-for="user in users" :key="user.id">
-                            <TableCell class="text-center font-medium">
-                                {{ user.id }}
-                            </TableCell>
-                            <TableCell>{{ user.email }}</TableCell>
+                        <TableRow v-for="group in groups" :key="group.id">
                             <TableCell class="text-center">
-                                <div
-                                    v-for="(role, index) in JSON.parse(
-                                        user.role
-                                    )"
-                                    :key="index"
-                                >
-                                    {{ role }}
-                                </div>
+                                {{ group.id }}
                             </TableCell>
+                            <TableCell>{{ group.name }}</TableCell>
                             <TableCell class="text-center">
                                 {{
-                                    moment(user.created_at).format(
+                                    moment(group.created_at).format(
                                         "YYYY-MM-DD HH:mm"
                                     )
                                 }}
                             </TableCell>
                             <TableCell class="text-center">
-                                {{ user.created_by }}
+                                {{ group.created_by }}
                             </TableCell>
                         </TableRow>
                     </TableBody>
@@ -192,15 +120,13 @@
 <script setup>
 //Imports
 import $ from 'jquery';
+import moment from "moment";
 import Dashboard from "@/Pages/Dashboard.vue";
 import InputError from "@/Components/InputError.vue";
 import TextInput from "@/Components/TextInput.vue";
-import { Head, useForm, usePage } from "@inertiajs/vue3";
-import moment from "moment";
+import { Head, useForm , usePage } from "@inertiajs/vue3";
 import { computed } from "vue";
 
-//USE
-import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { CardContent } from "@/components/ui/card";
 import {
@@ -220,53 +146,46 @@ import {
     DialogTrigger,
     DialogClose,
 } from "@/components/ui/dialog";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
+//Uses
 
-//Props $ Emit
-defineProps({ users: Object });
-
-//Data
+//Refs
 const page = usePage();
 const form = useForm({
-    email: "",
-    password: "",
-    role: "",
+    name: "",
     created_by: parseInt(page.props.auth.user.id),
 });
+
+//Props $ Emit
+defineProps({ groups: Object });
+
 
 //Computed
 const dataFilled = computed(() => {
     if (
-        form.email.length > 0 &&
-        form.password.length > 8 &&
-        form.role.length > 0
+        form.name.length > 0
     ) {
         return false;
     } else return true;
 });
-const pw8 = computed(() => {
-    if (form.password.length > 0 && form.password.length < 8) {
-        return "password at least 8 digit";
-    }
-});
+
 //Mathods
-const submit = () => {
-    form.post(route("user.add"), {
+const submit = ()=>{
+    
+
+    form.post(route('group.add'),{
         // onSuccess: (response) => {
         //     console.log(response);
         // },
         onFinish: () => {
             $('#closeBtn').trigger("click");
         },
-    });
-};
+    })
+}
+
+//Hooks
+
+
 </script>
 <style scoped>
-@import "../../css/button.css";
+@import '../../../css/button.css'
 </style>

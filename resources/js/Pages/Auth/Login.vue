@@ -54,7 +54,7 @@ onMounted(() => {
     const page = usePage();
     // Redirect to dashboard if user is logged in
     if (page.props.auth.user) {
-        route('dashboard')
+        route('page.group')
     }
 });
 

@@ -16,6 +16,11 @@ class User extends Authenticatable
 
 
     //relationship user has many project,task and answer
+    public function groups()
+    {
+        return $this->belongsToMany(Groups::class);
+    }
+
     public function project() : HasMany{
         return $this->hasMany(Projects::class);
     }
