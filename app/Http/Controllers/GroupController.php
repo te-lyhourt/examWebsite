@@ -28,4 +28,32 @@ class GroupController extends Controller
             'created_by'=> $validator['created_by'],
         ]);
     }
+    public function groupDetail(Request $request){
+        $request->merge(['id' => $request->route('id')]);
+
+        $validator = $request->validate([
+            'id' => 'required|integer|exists:groups,id'
+        ]);
+        $group = Groups::findOrFail($validator['id']);
+        return Inertia('Group/GroupDetail', [
+            'group' => $group,
+            'users'=>$group->load('users')
+        ]);
+    }
+
+    public function addUser(Request $request,$id){
+
+        $users = [];
+        foreach($request->users as $userID){
+            $users[$userID] = [
+                'added_by'=>auth()->id()
+            ];
+        }
+        $group = Groups::find($id);
+        $group->users()->syncWithoutDetaching($users);
+    }
+
+    // public function showUser(Groups $group){
+    //     return $group->load('users');
+    // }
 }

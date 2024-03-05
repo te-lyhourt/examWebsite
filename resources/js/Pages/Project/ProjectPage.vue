@@ -110,6 +110,15 @@
                             <TableCell class="text-center">
                                 {{ project.created_by }}
                             </TableCell>
+                            <TableCell class="text-center">
+                                <Button
+                                    variant="outline"
+                                    class="buttonStyle"
+                                    @click="GoDetail(project.id)"
+                                >
+                                    DETAIL
+                                </Button>
+                            </TableCell>
                         </TableRow>
                     </TableBody>
                 </Table>
@@ -123,7 +132,7 @@ import $ from 'jquery'
 import moment from "moment";
 import { computed } from "vue";
 import Dashboard from "@/Pages/Dashboard.vue";
-import { Head, useForm , usePage } from "@inertiajs/vue3";
+import { Head, useForm , usePage ,router} from "@inertiajs/vue3";
 import { Button } from "@/components/ui/button";
 import { CardContent } from "@/components/ui/card";
 import InputError from "@/Components/InputError.vue";
@@ -178,7 +187,9 @@ const submit = ()=>{
         },
     })
 }
-
+const GoDetail = (id)=>{
+    router.get('/project/detail/'+id);
+}
 //Hooks
 
 

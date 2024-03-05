@@ -28,7 +28,7 @@ class UserController extends Controller
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:8',
             'role' => 'required|string',
-            'created_by' => 'required|exists:users,id',
+            'created_by' => 'required|integer|exists:users,id',
         ]);
 
         // Create user
@@ -37,6 +37,15 @@ class UserController extends Controller
             'password' => bcrypt($validator['password']),
             'role' => json_encode([$validator['role']]),
             'created_by'=> $validator['created_by'],
+        ]);
+    }
+    public function search(Request $request)
+    {
+        $validator = $request->validate([
+            'id' => 'required|integer|exists:users,id'
+        ]);
+        $user = User::findOrFail([
+            'id'=>$validator(['id'])
         ]);
     }
 }

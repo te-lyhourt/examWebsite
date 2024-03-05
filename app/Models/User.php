@@ -21,15 +21,15 @@ class User extends Authenticatable
         return $this->belongsToMany(Groups::class);
     }
 
-    public function project() : HasMany{
-        return $this->hasMany(Projects::class);
-    }
-    public function question() : HasMany{
-        return $this->hasMany(Question::class);
-    }
-    public function answer() : HasMany{
-        return $this->hasMany(Answer::class);
-    }
+    // public function project() : HasMany{
+    //     return $this->hasMany(Projects::class);
+    // }
+    // public function question() : HasMany{
+    //     return $this->hasMany(Question::class);
+    // }
+    // public function answer() : HasMany{
+    //     return $this->hasMany(Answer::class);
+    // }
 
     /**
      * The attributes that are mass assignable.

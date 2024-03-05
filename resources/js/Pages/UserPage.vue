@@ -244,7 +244,7 @@ const form = useForm({
 const dataFilled = computed(() => {
     if (
         form.email.length > 0 &&
-        form.password.length > 8 &&
+        form.password.length >= 8 &&
         form.role.length > 0
     ) {
         return false;
@@ -258,10 +258,13 @@ const pw8 = computed(() => {
 //Mathods
 const submit = () => {
     form.post(route("user.add"), {
-        // onSuccess: (response) => {
-        //     console.log(response);
-        // },
+        onSuccess: (response) => {
+            console.log(response);
+        },
         onFinish: () => {
+            // console.log(form.errors.length)
+            // if(form.errors)
+            // form.reset()
             $('#closeBtn').trigger("click");
         },
     });
