@@ -258,13 +258,8 @@ const pw8 = computed(() => {
 //Mathods
 const submit = () => {
     form.post(route("user.add"), {
-        onSuccess: (response) => {
-            console.log(response);
-        },
-        onFinish: () => {
-            // console.log(form.errors.length)
-            // if(form.errors)
-            // form.reset()
+        onSuccess: () => {
+            form.reset()
             $('#closeBtn').trigger("click");
         },
     });

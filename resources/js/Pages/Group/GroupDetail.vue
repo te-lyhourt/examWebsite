@@ -158,10 +158,7 @@ const submit = () => {
             users: [parseInt(form.users)],
         },
         {
-            onSuccess: (response) => {
-                console.log(response);
-            },
-            onFinish: () => {
+            onSuccess: () => {
                 form.reset()
                 $("#closeBtn").trigger("click");
             },

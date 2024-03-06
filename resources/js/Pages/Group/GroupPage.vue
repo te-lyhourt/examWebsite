@@ -182,10 +182,7 @@ const dataFilled = computed(() => {
 //Mathods
 const submit = () => {
     form.post(route("group.add"), {
-        // onSuccess: (response) => {
-        //     console.log(response);
-        // },
-        onFinish: () => {
+        onSuccess: () => {
             form.reset()
             $("#closeBtn").trigger("click");
         },

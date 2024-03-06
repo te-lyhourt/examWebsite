@@ -163,10 +163,7 @@ const submit = () => {
             groups: [parseInt(form.group)],
         },
         {
-            onSuccess: (response) => {
-                console.log(response);
-            },
-            onFinish: () => {
+            onSuccess: () => {
                 form.reset();
                 $("#closeBtn").trigger("click");
             },

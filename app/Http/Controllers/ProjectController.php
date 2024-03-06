@@ -20,7 +20,7 @@ class ProjectController extends Controller
     {
         // Validation rules
         $validator = $request->validate([
-            'name' => 'required|string',
+            'name' => 'required|string|unique:projects,name',
             'created_by' => 'required|exists:users,id',
         ]);
         //create group

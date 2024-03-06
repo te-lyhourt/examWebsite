@@ -84,7 +84,9 @@
                     <!-- <TableCaption>A list of your recent invoices.</TableCaption> -->
                     <TableHeader>
                         <TableRow>
-                            <TableHead class="w-[100px] px-5"> PROJECT ID </TableHead>
+                            <TableHead class="w-[100px] px-5">
+                                PROJECT ID
+                            </TableHead>
                             <TableHead>PROJECT Name</TableHead>
                             <TableHead class="text-center">
                                 Created At
@@ -128,11 +130,11 @@
 </template>
 <script setup>
 //Imports
-import $ from 'jquery'
+import $ from "jquery";
 import moment from "moment";
 import { computed } from "vue";
 import Dashboard from "@/Pages/Dashboard.vue";
-import { Head, useForm , usePage ,router} from "@inertiajs/vue3";
+import { Head, useForm, usePage, router } from "@inertiajs/vue3";
 import { Button } from "@/components/ui/button";
 import { CardContent } from "@/components/ui/card";
 import InputError from "@/Components/InputError.vue";
@@ -157,43 +159,36 @@ import {
 } from "@/components/ui/dialog";
 //Uses
 
-
 //Refs
 const page = usePage();
 const form = useForm({
     name: "",
     created_by: parseInt(page.props.auth.user.id),
-});  
+});
 //Props $ Emit
 defineProps({ projects: Object });
 
 //Computed
 const dataFilled = computed(() => {
-    if (
-        form.name.length > 0
-    ) {
+    if (form.name.length > 0) {
         return false;
     } else return true;
 });
 
 //Mathods
-const submit = ()=>{
-    form.post(route('project.add'),{
-        // onSuccess: (response) => {
-        //     console.log(response);
-        // },
-        onFinish: () => {
-            $('#closeBtn').trigger("click");
+const submit = () => {
+    form.post(route("project.add"), {
+        onSuccess: () => {
+            form.reset()
+            $("#closeBtn").trigger("click");
         },
-    })
-}
-const GoDetail = (id)=>{
-    router.get('/project/detail/'+id);
-}
+    });
+};
+const GoDetail = (id) => {
+    router.get("/project/detail/" + id);
+};
 //Hooks
-
-
 </script>
 <style scoped>
-@import '../../../css/button.css'
+@import "../../../css/button.css";
 </style>

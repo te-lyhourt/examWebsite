@@ -19,7 +19,7 @@ class GroupController extends Controller
     {
         // Validation rules
         $validator = $request->validate([
-            'name' => 'required|string',
+            'name' => 'required|string|unique:groups,name',
             'created_by' => 'required|exists:users,id',
         ]);
         //create group

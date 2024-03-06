@@ -18,20 +18,20 @@ class DatabaseSeeder extends Seeder
             'role'=>json_encode(['system admin']),
         ]);
         \App\Models\User::create([
-            'email'=>'abcd@pte.hu',
-            'password'=>Hash::make('abcdabcd'),
+            'email'=>'system@pte.hu',
+            'password'=>Hash::make('systemsystem'),
             'role'=>json_encode(['system admin']),
             'created_by'=>1
         ]);
         \App\Models\User::create([
-            'email'=>'CVBN123@pte.hu',
-            'password'=>Hash::make('CVBN123CVBN123'),
+            'email'=>'project@pte.hu',
+            'password'=>Hash::make('projectproject'),
             'role'=>json_encode(['project admin']),
             'created_by'=>1
         ]);
         \App\Models\User::create([
-            'email'=>'QWER123@pte.hu',
-            'password'=>Hash::make('QWER123QWER123'),
+            'email'=>'user@pte.hu',
+            'password'=>Hash::make('useruser'),
             'role'=>json_encode(['user']),
             'created_by'=>1
         ]);
