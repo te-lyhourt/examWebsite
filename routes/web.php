@@ -31,7 +31,7 @@ Route::middleware('auth')->group(function () {
     //project
     Route::get('/project',[ProjectController::class,'index'])->name('page.project');
     Route::post('/project/add',[ProjectController::class,'store'])->name('project.add');
-    Route::get('/project/detail/{id}',[ProjectController::class,'groupDetail'])->name('page.projectDetail');
+    Route::get('/project/detail/{id}',[ProjectController::class,'projectDetail'])->name('page.projectDetail');
     Route::post('/project/group/{id}',[ProjectController::class,'addGroup'])->name('project.addGroup');
 
     //group 

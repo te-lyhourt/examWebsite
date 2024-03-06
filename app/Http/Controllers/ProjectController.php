@@ -29,7 +29,7 @@ class ProjectController extends Controller
             'created_by'=> $validator['created_by'],
         ]);
     }
-    public function groupDetail(Request $request){
+    public function projectDetail(Request $request){
         $request->merge(['id' => $request->route('id')]);
 
         $validator = $request->validate([

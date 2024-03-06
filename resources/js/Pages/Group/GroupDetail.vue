@@ -18,7 +18,7 @@
                         </Button>
                     </DialogTrigger>
                     <DialogContent
-                        class="sm:max-w-md bg-white dark:bg-gray-800 text-xs dark:text-white text-gray-800"
+                        class="sm:max-w-lg bg-white dark:bg-gray-800 text-xs dark:text-white text-gray-800"
                     >
                         <DialogHeader class="p-6 pt-0">
                             <DialogTitle
@@ -32,24 +32,30 @@
                                     <div class="flex flex-col space-y-1.5">
                                         <span
                                             class="block font-medium text-sm text-gray-800 dark:text-white"
-                                            >User ID
+                                            >User Email
                                             <span style="color: red"
                                                 >*</span
                                             ></span
                                         >
-                                        <TextInput
-                                            class="mt-1 block w-full"
+                                        <!-- <TextInput
+                                            
+
+                                        /> -->
+                                        <Textarea
+                                            placeholder="Add user emails here."
+                                            class="text_scroll border-gray-300 dark:border-gray-700 dark:bg-gray-700 dark:text-white text-black focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"
                                             v-model="form.users"
                                             required
                                             autofocus
                                         />
                                         <InputError
+                                            v-for="(error, index) in $page.props.errors"
                                             class="mt-2"
-                                            :message="form.errors.id"
+                                            :message="error"
                                         />
                                     </div>
                                 </div>
-                                <div class="flex justify-end mt-6">
+                                <div class="flex justify-end mt-6 w-full">
                                     <DialogFooter class="sm:justify-start">
                                         <DialogClose as-child>
                                             <Button
@@ -87,7 +93,7 @@
                                 USER ID
                             </TableHead>
                             <TableHead>Email</TableHead>
-                            <TableHead>Added By</TableHead>
+                            <TableHead class="text-center">Added By</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -96,7 +102,9 @@
                                 {{ user.id }}
                             </TableCell>
                             <TableCell>{{ user.email }}</TableCell>
-                            <TableCell class="text-center">{{ user.group_user.added_by }}</TableCell>
+                            <TableCell class="text-center">{{
+                                user.group_user.added_by
+                            }}</TableCell>
                         </TableRow>
                     </TableBody>
                 </Table>
@@ -104,6 +112,7 @@
         </div>
     </Dashboard>
 </template>
+
 <script setup>
 //Imports
 import $ from "jquery";
@@ -112,8 +121,9 @@ import Dashboard from "@/Pages/Dashboard.vue";
 import InputError from "@/Components/InputError.vue";
 import TextInput from "@/Components/TextInput.vue";
 import { Head, useForm, usePage, router } from "@inertiajs/vue3";
-import { computed, ref } from "vue";
+import { computed, reactive, ref } from "vue";
 
+import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { CardContent } from "@/components/ui/card";
 import {
@@ -151,16 +161,21 @@ const dataFilled = computed(() => {
 });
 
 //Mathods
+
 const submit = () => {
+    const users = form.users.split("\n");
     router.post(
         "/group/user/" + props.group.id,
         {
-            users: [parseInt(form.users)],
+            users: users,
         },
         {
             onSuccess: () => {
-                form.reset()
+                form.reset();
                 $("#closeBtn").trigger("click");
+            },
+            onError: (errors) => {
+                errors = Object.values(errors);
             },
         }
     );
@@ -173,4 +188,16 @@ const goBack = () => {
 </script>
 <style scoped>
 @import "../../../css/button.css";
+.text_scroll::-webkit-scrollbar {
+    width: 0.5rem;
+    height: 0.5rem;
+}
+.text_scroll::-webkit-scrollbar-thumb {
+    border-radius: calc(0.5rem - 4px);
+
+    background-color: hsl(240 5% 64.9% / 0.3);
+}
+.text_scroll::-webkit-scrollbar-track {
+    background-color: hsl(240 3.7% 15.9%);
+}
 </style>
