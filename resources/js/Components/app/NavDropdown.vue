@@ -24,18 +24,6 @@
                 class="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
             >
                 <div class="py-1">
-                    <MenuItem v-slot="{ active }" v-if="$page.url != '/group'">
-                        <a
-                            :class="[
-                                active
-                                    ? 'bg-gray-100 text-gray-900'
-                                    : 'text-gray-700',
-                                'block px-4 py-2 text-sm',
-                            ]"
-                            :href="route('page.group')"
-                            >GROUP</a
-                        >
-                    </MenuItem>
                     <MenuItem
                         v-slot="{ active }"
                         v-if="$page.url != '/project'"
@@ -51,7 +39,19 @@
                             >PROJECT</a
                         >
                     </MenuItem>
-                    <MenuItem v-slot="{ active }" v-if="$page.url != '/user'">
+                    <MenuItem v-slot="{ active }" v-if="$page.url != '/group'">
+                        <a
+                            :class="[
+                                active
+                                    ? 'bg-gray-100 text-gray-900'
+                                    : 'text-gray-700',
+                                'block px-4 py-2 text-sm',
+                            ]"
+                            :href="route('page.group')"
+                            >GROUP</a
+                        >
+                    </MenuItem>
+                    <MenuItem v-slot="{ active }" v-if="$page.url != '/user' && showUser">
                         <a
                             type="submit"
                             :class="[
@@ -61,6 +61,7 @@
                                 'block w-full px-4 py-2 text-left text-sm',
                             ]"
                             :href="route('page.user')"
+
                             >USER</a
                         >
                     </MenuItem>
@@ -73,9 +74,12 @@
 <script setup>
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
 import { ChevronDownIcon } from "@heroicons/vue/20/solid";
+
 defineProps({
-  text: String,
+    text: String,
+    showUser:Boolean,
 });
+
 </script>
 <style scoped>
 .h-btn {

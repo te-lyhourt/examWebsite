@@ -39,6 +39,10 @@ class UserController extends Controller
             'created_by'=> $validator['created_by'],
         ]);
     }
+    public function delete(Request $request){
+
+
+    }
     public function search(Request $request)
     {
         $validator = $request->validate([
