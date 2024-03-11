@@ -10,7 +10,7 @@
                 </h2>
             </div>
             <div class="flex justify-end mr-4">
-                <Dialog>
+                <Dialog v-if="!roleUser">
                     <DialogTrigger as-child>
                         <Button variant="outline" class="buttonStyle">
                             Create New Project
@@ -132,7 +132,7 @@
 //Imports
 import $ from "jquery";
 import moment from "moment";
-import { computed } from "vue";
+import { computed , ref, onMounted} from "vue";
 import Dashboard from "@/Pages/Dashboard.vue";
 import { Head, useForm, usePage, router } from "@inertiajs/vue3";
 import { Button } from "@/components/ui/button";
@@ -160,6 +160,7 @@ import {
 //Uses
 
 //Refs
+const roleUser = ref(false);
 const page = usePage();
 const form = useForm({
     name: "",
@@ -176,6 +177,14 @@ const dataFilled = computed(() => {
 });
 
 //Mathods
+
+onMounted(() => {
+    //check user role
+    const role = JSON.parse(page.props.auth.user.role)[0];
+    if (role == "user") roleUser.value = true;
+    else roleUser.value = false;
+});
+
 const submit = () => {
     form.post(route("project.add"), {
         onSuccess: () => {

@@ -60,11 +60,10 @@ import NavDropdown from "@/Components/app/NavDropdown.vue";
 
 //Data
 const showUser = ref(false);
-
 //Mathods
 onMounted(() => {
     const page = usePage();
-    // Redirect access to user page if user not system admin
+    // Restrict access to user page if user not system admin
     const role = JSON.parse(page.props.auth.user.role)[0];
     if (role == "system admin") showUser.value = true;
     else showUser.value = false;

@@ -10,7 +10,7 @@
                 </h2>
             </div>
             <div class="flex justify-end mr-4">
-                <Dialog>
+                <Dialog v-if="!roleUser">
                     <DialogTrigger as-child>
                         <Button variant="outline" class="buttonStyle">
                             Create New Group
@@ -137,7 +137,7 @@ import Dashboard from "@/Pages/Dashboard.vue";
 import InputError from "@/Components/InputError.vue";
 import TextInput from "@/Components/TextInput.vue";
 import { Head, useForm, usePage, router } from "@inertiajs/vue3";
-import { computed, ref } from "vue";
+import { computed, ref, onMounted } from "vue";
 
 import { Button } from "@/components/ui/button";
 import { CardContent } from "@/components/ui/card";
@@ -163,6 +163,7 @@ import GroupDetail from "./GroupDetail.vue";
 //Uses
 
 //Refs
+const roleUser = ref(false);
 const page = usePage();
 const form = useForm({
     name: "",
@@ -170,7 +171,9 @@ const form = useForm({
 });
 
 //Props $ Emit
-defineProps({ groups: Object });
+defineProps({
+    groups: Object,
+});
 
 //Computed
 const dataFilled = computed(() => {
@@ -180,16 +183,24 @@ const dataFilled = computed(() => {
 });
 
 //Mathods
+
+onMounted(() => {
+    //check user role
+    const role = JSON.parse(page.props.auth.user.role)[0];
+    if (role == "user") roleUser.value = true;
+    else roleUser.value = false;
+});
+
 const submit = () => {
     form.post(route("group.add"), {
         onSuccess: () => {
-            form.reset()
+            form.reset();
             $("#closeBtn").trigger("click");
         },
     });
 };
 const GoDetail = (id) => {
-    router.get('/group/detail/'+id);
+    router.get("/group/detail/" + id);
 };
 //Hooks
 </script>
