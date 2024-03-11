@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name')->unique();;
             $table->foreignIdFor(\App\Models\User::class,'created_by');
+            $table->foreignIdFor(\App\Models\User::class,'admin')->nullable();
             $table->timestamps();
         });
     }

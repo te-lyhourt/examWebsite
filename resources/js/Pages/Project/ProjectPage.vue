@@ -92,6 +92,9 @@
                                 Created At
                             </TableHead>
                             <TableHead class="text-center">
+                                Project Admin
+                            </TableHead>
+                            <TableHead class="text-center">
                                 Created By
                             </TableHead>
                         </TableRow>
@@ -110,8 +113,13 @@
                                 }}
                             </TableCell>
                             <TableCell class="text-center">
+                                {{ project.admin }}
+                            </TableCell>
+                            
+                            <TableCell class="text-center">
                                 {{ project.created_by }}
                             </TableCell>
+
                             <TableCell class="text-center">
                                 <Button
                                     variant="outline"
