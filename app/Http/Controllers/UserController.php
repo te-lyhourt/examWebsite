@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Auth;
 
 // use GuzzleHttp\Psr7\Response;
 // use Illuminate\Validation\Rule;
@@ -13,7 +14,11 @@ class UserController extends Controller
 {
     public function all_user()
     {
-        $users = User::select('id', 'email', 'role', 'created_at', 'created_by')
+        // Get the ID of the currently authenticated user
+        $authUserId = Auth::id();
+
+        $users = User::where('id', '!=', $authUserId)
+            ->select('id', 'email', 'role', 'created_at', 'created_by')
             ->orderBy('created_at', 'desc') // Sort by creation date in descending order
             ->get();
         return Inertia('UserPage', [
@@ -36,20 +41,25 @@ class UserController extends Controller
             'email' => $validator['email'],
             'password' => bcrypt($validator['password']),
             'role' => json_encode([$validator['role']]),
-            'created_by'=> $validator['created_by'],
+            'created_by' => $validator['created_by'],
         ]);
     }
-    public function delete(Request $request){
 
-
-    }
     public function search(Request $request)
     {
         $validator = $request->validate([
             'id' => 'required|integer|exists:users,id'
         ]);
         $user = User::findOrFail([
-            'id'=>$validator(['id'])
+            'id' => $validator(['id'])
         ]);
+    }
+    public function delete(Request $request)
+    {
+        $validator = $request->validate([
+            //validataion rule
+            'users.*' => 'required|integer|exists:users,id'
+        ]);
+        User::whereIn('id', $validator['users'])->delete();
     }
 }

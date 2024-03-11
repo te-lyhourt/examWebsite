@@ -229,7 +229,7 @@ import $ from "jquery";
 import Dashboard from "@/Pages/Dashboard.vue";
 import InputError from "@/Components/InputError.vue";
 import TextInput from "@/Components/TextInput.vue";
-import { Head, useForm, usePage } from "@inertiajs/vue3";
+import { Head, useForm, usePage, router } from "@inertiajs/vue3";
 import moment from "moment";
 import { computed, reactive, ref } from "vue";
 
@@ -327,9 +327,15 @@ const updateDeleteUsersList = (id, event) => {
 
 const deleteUser = () => {
     if (confirm("Press OK to delete selected user!") == true) {
-        console.log("You pressed OK!");
-    } else {
-        console.log("You canceled!");
+        console.log(deleteUsersList);
+        router.delete(
+            "/user/delete",
+            {
+                data: {
+                    users: deleteUsersList,
+                },
+            }
+        );
     }
 };
 </script>

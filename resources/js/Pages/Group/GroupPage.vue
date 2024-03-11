@@ -159,7 +159,7 @@ import {
     DialogClose,
 } from "@/components/ui/dialog";
 import GroupDetail from "./GroupDetail.vue";
-import { error } from "jquery";
+
 //Uses
 
 //Refs

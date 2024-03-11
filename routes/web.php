@@ -27,8 +27,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/user',[UserController::class,'all_user'])->name('page.user');
     Route::post('/user/add',[UserController::class,'add_user'])->name('user.add');
     Route::post('/user/search',[UserController::class,'search'])->name('user.search');
+    Route::delete('/user/delete',[UserController::class,'delete'])->name('user.delete');
 
-    //project
     Route::get('/project',[ProjectController::class,'index'])->name('page.project');
     Route::post('/project/add',[ProjectController::class,'store'])->name('project.add');
     Route::get('/project/detail/{id}',[ProjectController::class,'projectDetail'])->name('page.projectDetail');
