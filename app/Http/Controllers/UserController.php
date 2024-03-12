@@ -14,6 +14,12 @@ class UserController extends Controller
 {
     public function all_user()
     {
+        $user = Auth::user();
+        $userRole = json_decode($user->role)[0];
+        if ($userRole == 'user') {
+            return redirect()->route('page.project');
+        }
+        
         // Get the ID of the currently authenticated user
         $authUserId = Auth::id();
 

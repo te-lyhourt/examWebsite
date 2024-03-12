@@ -19,6 +19,7 @@ class Projects extends Model
     protected $fillable = [
         'name',
         'created_by',
+        'admin',
     ];
 
 }

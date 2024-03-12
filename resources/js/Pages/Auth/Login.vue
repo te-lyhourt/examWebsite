@@ -1,3 +1,4 @@
+
 <template>
     <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100 dark:bg-gray-900">
         <div class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white dark:bg-gray-800 shadow-md overflow-hidden sm:rounded-lg">
@@ -11,7 +12,7 @@
                     <span class="block font-medium text-sm text-gray-700 dark:text-gray-300">Email</span>
 
                     <TextInput id="email" class="mt-1 block w-full" v-model="form.email" required autofocus
-                        autocomplete="username" />
+                    autocomplete="email" />
 
                     <InputError class="mt-2" :message="form.errors.email" />
                 </div>
@@ -19,8 +20,7 @@
                 <div class="mt-4">
                     <span class="block font-medium text-sm text-gray-700 dark:text-gray-300">Password</span>
 
-                    <TextInput id="password" type="password" class="mt-1 block w-full" v-model="form.password" required
-                        autocomplete="current-password" />
+                    <TextInput id="password" type="password" class="mt-1 block w-full" v-model="form.password" required/>
 
                     <InputError class="mt-2" :message="form.errors.password" />
                 </div>

@@ -24,7 +24,7 @@
                         >
                             {{ $page.props.auth.user.email }}
                         </div>
-                        <NavDropdown class="option" text="GO TO" :showUser="showUser"> </NavDropdown>
+                        <NavDropdown class="option" text="GO TO" :showUser="showUser" v-if="!isUser"> </NavDropdown>
 
                         <Link
                             :href="route('logout')"
@@ -42,7 +42,7 @@
             <main class="flex justify-content-stretch">
                 <!-- side bar -->
                 <div class="flex mt-5 sidebar">
-                    <Navigation :showUser="showUser"></Navigation>
+                    <Navigation :showUser="showUser" v-if="!isUser"></Navigation>
                 </div>
                 <div class="w-full">
                     <slot />
@@ -60,6 +60,7 @@ import NavDropdown from "@/Components/app/NavDropdown.vue";
 
 //Data
 const showUser = ref(false);
+const isUser = ref(false)
 //Mathods
 onMounted(() => {
     const page = usePage();
@@ -67,6 +68,9 @@ onMounted(() => {
     const role = JSON.parse(page.props.auth.user.role)[0];
     if (role == "system admin") showUser.value = true;
     else showUser.value = false;
+
+    if(role == "user") isUser.value = true
+    else isUser.value = false
 });
 </script>
 

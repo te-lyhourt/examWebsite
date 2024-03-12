@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignIdFor(\App\Models\Groups::class,'groups_id')->onDelete('cascade');
             $table->foreignIdFor(\App\Models\Projects::class,'projects_id')->onDelete('cascade');
-            $table->foreignIdFor(\App\Models\User::class,'added_by');
+            $table->foreignIdFor(\App\Models\User::class,'added_by')->nullable();
             $table->timestamps();
         });
     }

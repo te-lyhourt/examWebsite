@@ -6,16 +6,30 @@ use App\Models\Groups;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
 
 class GroupController extends Controller
 {
-    //project page, list all project
     public function index()
     {
-        $groups = Groups::orderBy('created_at', 'desc')->get();
-        return Inertia('Group/GroupPage', [
-            'groups' => $groups
-        ]);
+        $user = Auth::user();
+        $userRole = json_decode($user->role)[0];
+
+        if ($userRole == 'system admin') {
+            $groups = Groups::orderBy('created_at', 'desc')->get();
+            return Inertia('Group/GroupPage', [
+                'groups' => $groups
+            ]);
+        }
+        if ($userRole == 'project admin') {
+            $groups = Groups::orWhere('created_by', $user->id)->orderBy('created_at', 'desc')->get();
+            return Inertia('Group/GroupPage', [
+                'groups' => $groups
+            ]);
+        }
+        if ($userRole == 'user') {
+            return redirect()->route('page.project');
+        }
     }
     public function store(Request $request)
     {
@@ -32,6 +46,12 @@ class GroupController extends Controller
     }
     public function groupDetail(Request $request)
     {
+        $user = Auth::user();
+        $userRole = json_decode($user->role)[0];
+        if ($userRole == 'user') {
+            return redirect()->route('page.project');
+        }
+
         $request->merge(['id' => $request->route('id')]);
 
         $validator = $request->validate([
@@ -54,10 +74,10 @@ class GroupController extends Controller
             ],
             //custome error messsage
             [
-                'users.*.required'=>'Error at :position: email is required.',
-                'users.*.email'=>'Error at :position: The :input must be a valid email address.',
+                'users.*.required' => 'Error at :position: email is required.',
+                'users.*.email' => 'Error at :position: The :input must be a valid email address.',
                 'users.*.exists' => 'Error at :position: The :input does not exist.',
-                
+
             ]
         );
         $userIDs = User::whereIn('email', $validatUser['users'])->pluck('id');
@@ -68,6 +88,31 @@ class GroupController extends Controller
             ];
         }
         $group = Groups::find($id);
+        $group->users()->syncWithoutDetaching($users);
+    }
+    public function createUser(Request $request, $id)
+    {
+        // Validation rules
+        $validator = $request->validate([
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|string|min:8',
+            'role' => 'required|string',
+            'created_by' => 'required|integer|exists:users,id',
+        ]);
+
+        // Create user
+        $user = User::create([
+            'email' => $validator['email'],
+            'password' => bcrypt($validator['password']),
+            'role' => json_encode([$validator['role']]),
+            'created_by' => $validator['created_by'],
+        ]);
+        $group = Groups::find($id);
+
+        $users = [];
+        $users[$user->id] = [
+            'added_by' => auth()->id()
+        ];
         $group->users()->syncWithoutDetaching($users);
     }
 

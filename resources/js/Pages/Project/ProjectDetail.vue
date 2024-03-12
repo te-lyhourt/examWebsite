@@ -10,7 +10,7 @@
                     {{ props.project.name }}
                 </h2>
             </div>
-            <div class="flex justify-end mr-4">
+            <div class="flex justify-end mr-4" v-if="!roleUser">
                 <Dialog>
                     <DialogTrigger as-child>
                         <Button variant="outline" class="buttonStyle">
@@ -79,7 +79,7 @@
                 </Dialog>
             </div>
 
-            <div class="mt-5">
+            <div class="mt-5" v-if="!roleUser">
                 <Table>
                     <TableHeader>
                         <TableRow>
@@ -117,7 +117,7 @@ import Dashboard from "@/Pages/Dashboard.vue";
 import InputError from "@/Components/InputError.vue";
 import TextInput from "@/Components/TextInput.vue";
 import { Head, useForm, usePage, router } from "@inertiajs/vue3";
-import { computed, ref } from "vue";
+import { computed, ref ,onMounted} from "vue";
 
 import { Button } from "@/components/ui/button";
 import { CardContent } from "@/components/ui/card";
@@ -141,10 +141,11 @@ import {
 //Uses
 
 //Refs
+const roleUser = ref(false);
 const form = useForm({
     group: "",
 });
-
+const page = usePage();
 //Props $ Emit
 const props = defineProps({ project: Object });
 
@@ -174,6 +175,14 @@ const goBack = () => {
     // Go back to the previous page
     window.history.back();
 };
+
+onMounted(() => {
+    //check user role
+    const role = JSON.parse(page.props.auth.user.role)[0];
+    if (role == "user") roleUser.value = true;
+    else roleUser.value = false;
+});
+
 //Hooks
 </script>
 <style scoped>

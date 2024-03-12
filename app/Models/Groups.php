@@ -11,9 +11,11 @@ class Groups extends Model
     {
         return $this->belongsToMany(User::class)->withTimestamps()->as('group_user')->withPivot('added_by');
     }
+    
+
     public function projects()
     {
-        return $this->belongsToMany(Project::class);
+        return $this->belongsToMany(Projects::class);
     }
     /**
      * The attributes that are mass assignable.
