@@ -15,14 +15,14 @@
                     class="buttonStyle ml-2"
                     @click="deleteUser"
                 >
-                    DELETE USER
+                    Delete User
                 </Button>
 
                 <div class="flex justify-end mr-4">
                     <Dialog>
                         <DialogTrigger as-child>
                             <Button variant="outline" class="buttonStyle">
-                                ADD USER
+                                Add User
                             </Button>
                         </DialogTrigger>
                         <DialogContent
@@ -143,7 +143,7 @@
                                                 variant="secondary"
                                                 class="ml-6 bg-gray-800 dark:bg-gray-200 text-xs text-white dark:text-gray-800 hover:bg-gray-700 dark:hover:bg-white hover:text-white dark:hover:text-gray-800"
                                             >
-                                                ADD USER
+                                                Add User
                                             </Button>
                                         </DialogFooter>
                                     </div>
@@ -159,13 +159,27 @@
                     <!-- <TableCaption>A list of your recent invoices.</TableCaption> -->
                     <TableHeader>
                         <TableRow>
-                            <TableHead class="text-center">
+                            <TableHead class="text-center w-[75px]">
                                 <input
                                     type="checkbox"
                                     class="checkbox"
+                                    id="checkPR"
                                     v-model="checkAll"
                                     @click="selectAll"
+                                    v-show="showAll"
                                 />
+                                <div
+                                    class="flex justify-center"
+                                    v-if="!showAll"
+                                >
+                                    <button
+                                        for="box"
+                                        class="checkbox px-[6px] h-[18px] flex items-center font-bold"
+                                        @click="unSelectAll"
+                                    >
+                                        <div class="mb-[2px]">-</div>
+                                    </button>
+                                </div>
                             </TableHead>
                             <TableHead class="w-[100px] px-5">
                                 USER ID
@@ -174,9 +188,6 @@
                             <TableHead class="text-center">USER Role</TableHead>
                             <TableHead class="text-center">
                                 Created At
-                            </TableHead>
-                            <TableHead class="text-center">
-                                Created By
                             </TableHead>
                         </TableRow>
                     </TableHeader>
@@ -187,9 +198,7 @@
                                     type="checkbox"
                                     class="checkbox"
                                     id="checkChile"
-                                    @change="
-                                        updateDeleteUsersList(user.id, $event)
-                                    "
+                                    @change="updateSelectList(user.id, $event)"
                                 />
                             </TableCell>
                             <TableCell class="text-center font-medium">
@@ -212,9 +221,6 @@
                                         "YYYY-MM-DD HH:mm"
                                     )
                                 }}
-                            </TableCell>
-                            <TableCell class="text-center">
-                                {{ user.created_by }}
                             </TableCell>
                         </TableRow>
                     </TableBody>
@@ -263,12 +269,10 @@ import {
 } from "@/components/ui/select";
 
 //Props $ Emit
-defineProps({ users: Object });
+const props = defineProps({ users: Object });
 
 //Data
 const page = usePage();
-const checkAll = ref(false);
-let deleteUsersList = [];
 
 const form = useForm({
     email: "",
@@ -295,15 +299,6 @@ const pw8 = computed(() => {
 });
 //Mathods
 
-//check and uncheck all checkbox
-const selectAll = () => {
-    if (checkAll.value) {
-        $('input[id="checkChile"]').trigger("click");
-    } else {
-        $('input[id="checkChile"]').trigger("click");
-    }
-};
-
 //add user to database
 const submit = () => {
     form.post(route("user.add"), {
@@ -313,46 +308,60 @@ const submit = () => {
         },
     });
 };
-const updateDeleteUsersList = (id, event) => {
-    //if user is select
-    if (event.target.checked) {
-        deleteUsersList.push(id);
+const listLen = props.users.length;
+const checkAll = ref(false);
+const showAll = ref(true);
+const selectAll = () => {
+    if (checkAll.value) {
+        $('input[id="checkChile"]').trigger("click");
     } else {
-        const index = deleteUsersList.indexOf(id);
+        $('input[id="checkChile"]').trigger("click");
+    }
+    showAll.value = true;
+};
+const unSelectAll = () => {
+    $('input[id="checkChile"]').prop("checked", false);
+    selectList.value = [];
+    showAll.value = true;
+    $('input[id="checkPR"]').prop("checked", false);
+};
+const selectList = ref([]);
+const updateSelectList = (id, event) => {
+    //if groups is select
+    if (event.target.checked) {
+        selectList.value.push(id);
+    } else {
+        const index = selectList.value.indexOf(id);
         if (index !== -1) {
-            deleteUsersList.splice(index, 1);
+            selectList.value.splice(index, 1);
         }
+    }
+    if (selectList.value.length == 0) {
+        $('input[id="checkPR"]').prop("checked", false);
+        showAll.value = true;
+    }
+    if (selectList.value.length > 0 && selectList.value.length <= listLen)
+        showAll.value = false;
+    if (selectList.value.length == listLen) {
+        showAll.value = true;
+        $('input[id="checkPR"]').prop("checked", true);
     }
 };
 
 const deleteUser = () => {
     if (confirm("Press OK to delete selected user!") == true) {
-        console.log(deleteUsersList);
-        router.delete(
-            "/user/delete",
-            {
-                data: {
-                    users: deleteUsersList,
-                },
-            }
-        );
+        router.delete("/user/delete", {
+            data: {
+                users: selectList.value,
+            },
+        });
+        selectList.value = []
+        $('input[id="checkPR"]').prop("checked", false);
+        showAll.value = true;
     }
 };
 </script>
 <style scoped>
 @import "../../css/button.css";
-
-.checkbox {
-    background-color: black;
-    border-radius: 0.35rem /* 6px */;
-    border: white 2px;
-}
-.checkbox:checked {
-    background-color: black;
-}
-
-.checkbox:focus {
-    background-color: black;
-    --tw-ring-shadow: 0;
-}
+@import "../../css/checkbox.css";
 </style>

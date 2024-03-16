@@ -90,6 +90,21 @@ class GroupController extends Controller
         $group = Groups::find($id);
         $group->users()->syncWithoutDetaching($users);
     }
+
+    public function removeUser(Request $request, $id)
+    {
+        // Validate the request data if needed
+        $validat = $request->validate([
+            'users.*' => 'required|integer|exists:users,id'
+        ]);
+
+        // Find the group
+        $group = Groups::find($id);
+
+        // Detach users from the group
+        $group->users()->detach($validat['users']);
+    }
+
     public function createUser(Request $request, $id)
     {
         // Validation rules
@@ -115,8 +130,13 @@ class GroupController extends Controller
         ];
         $group->users()->syncWithoutDetaching($users);
     }
-
-    // public function showUser(Groups $group){
-    //     return $group->load('users');
-    // }
+    //delete group
+    public function delete(Request $request)
+    {
+        $validator = $request->validate([
+            //validataion rule
+            'groups.*' => 'required|integer|exists:groups,id'
+        ]);
+        Groups::whereIn('id', $validator['groups'])->delete();
+    }
 }

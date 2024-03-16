@@ -35,6 +35,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/project/detail/{id}',[ProjectController::class,'projectDetail'])->name('page.projectDetail');
     Route::post('/project/group/{id}',[ProjectController::class,'addGroup'])->name('project.addGroup');
     Route::post('/project/admin/{id}',[ProjectController::class,'addAdmin'])->name('project.addAdmin');
+    Route::delete('/project/delete',[ProjectController::class,'delete'])->name('project.delete');
+    Route::delete('/project/removeGroup/{id}',[ProjectController::class,'removeGroup'])->name('project.removeGroup');
 
     //group 
     Route::get('/group',[GroupController::class,'index'])->name('page.group');
@@ -42,7 +44,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/group/detail/{id}',[GroupController::class,'groupDetail'])->name('page.groupDetail');
     Route::post('/group/user/{id}',[GroupController::class,'addUser'])->name('group.addUser');
     Route::post('/group/createUser/{id}',[GroupController::class,'createUser'])->name('group.createUser');
+    Route::delete('/group/delete',[GroupController::class,'delete'])->name('group.delete');
+    Route::delete('/group/removeUser/{id}',[GroupController::class,'removeUser'])->name('group.removeUser');
     
+
     // Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     // Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     // Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');

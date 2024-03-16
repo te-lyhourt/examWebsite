@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
+use SebastianBergmann\CodeCoverage\Report\Xml\Project;
 
 class ProjectController extends Controller
 {
@@ -92,6 +93,27 @@ class ProjectController extends Controller
         $project = Projects::find($id);
         $project->groups()->syncWithoutDetaching($groups);
     }
+    public function removeGroup(Request $request, $id)
+    {
+        // Validate the request data if needed
+        $validat = $request->validate([
+            'groups.*' => 'required|integer|exists:users,id'
+        ]);
+
+        // Find the group
+        $project = Projects::find($id);
+
+        // Detach users from the group
+        $project->groups()->detach($validat['groups']);
+    }
+    public function delete(Request $request){
+        $validator = $request->validate([
+            //validataion rule
+            'projects.*' => 'required|integer|exists:projects,id'
+        ]);
+        Projects::whereIn('id', $validator['projects'])->delete();
+    }
+
     public function addAdmin(Request $request, $id)
     {
         // Find the project by ID

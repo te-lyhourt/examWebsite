@@ -11,10 +11,18 @@
                 </h2>
             </div>
             <div class="flex justify-between">
-                <div class="flex justify-start mr-4">
+                <Button
+                    variant="outline"
+                    class="buttonStyle ml-2"
+                    @click="removeUser"
+                    :disabled="selectList.length == 0"
+                >
+                    Remove User
+                </Button>
+                <div class="flex justify-end mr-4">
                     <Dialog>
                         <DialogTrigger as-child>
-                            <Button variant="outline" class="buttonStyle">
+                            <Button variant="outline" class="buttonStyle mr-2">
                                 Create New User
                             </Button>
                         </DialogTrigger>
@@ -28,6 +36,10 @@
                                 >
                             </DialogHeader>
                             <CardContent>
+                                <div class="my-5 text-base">
+                                    New user will automatically add into the
+                                    group.
+                                </div>
                                 <form @submit.prevent="addUser">
                                     <div class="grid items-center w-full gap-4">
                                         <div class="flex flex-col space-y-1.5">
@@ -73,7 +85,9 @@
                                             />
                                             <InputError
                                                 class="mt-2"
-                                                :message="userForm.errors.password"
+                                                :message="
+                                                    userForm.errors.password
+                                                "
                                             />
                                         </div>
                                         <div class="flex flex-col space-y-1.5">
@@ -139,106 +153,129 @@
                             </CardContent>
                         </DialogContent>
                     </Dialog>
-                </div>
-                <div class="flex justify-end mr-4">
-                <Dialog>
-                    <DialogTrigger as-child>
-                        <Button variant="outline" class="buttonStyle">
-                            Add User to Group
-                        </Button>
-                    </DialogTrigger>
-                    <DialogContent
-                        class="sm:max-w-lg bg-white dark:bg-gray-800 text-xs dark:text-white text-gray-800"
-                    >
-                        <DialogHeader class="p-6 pt-0">
-                            <DialogTitle
-                                class="text-gray-800 dark:text-white text-center text-3xl"
-                                >Add User to Group</DialogTitle
-                            >
-                        </DialogHeader>
-                        <CardContent>
-                            <form @submit.prevent="submit">
-                                <div class="grid items-center w-full gap-4">
-                                    <div class="flex flex-col space-y-1.5">
-                                        <span
-                                            class="block font-medium text-sm text-gray-800 dark:text-white"
-                                            >User Email
-                                            <span style="color: red"
-                                                >*</span
-                                            ></span
-                                        >
-                                        <!-- <TextInput
+                    <Dialog>
+                        <DialogTrigger as-child>
+                            <Button variant="outline" class="buttonStyle">
+                                Add User to Group
+                            </Button>
+                        </DialogTrigger>
+                        <DialogContent
+                            class="sm:max-w-lg bg-white dark:bg-gray-800 text-xs dark:text-white text-gray-800"
+                        >
+                            <DialogHeader class="p-6 pt-0">
+                                <DialogTitle
+                                    class="text-gray-800 dark:text-white text-center text-3xl"
+                                    >Add User to Group</DialogTitle
+                                >
+                            </DialogHeader>
+                            <CardContent>
+                                <form @submit.prevent="submit">
+                                    <div class="grid items-center w-full gap-4">
+                                        <div class="flex flex-col space-y-1.5">
+                                            <span
+                                                class="block font-medium text-sm text-gray-800 dark:text-white"
+                                                >User Email
+                                                <span style="color: red"
+                                                    >*</span
+                                                ></span
+                                            >
+                                            <!-- <TextInput
                                             
 
                                         /> -->
-                                        <Textarea
-                                            placeholder="Add user emails here."
-                                            class="text_scroll border-gray-300 dark:border-gray-700 dark:bg-gray-700 dark:text-white text-black focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"
-                                            v-model="form.users"
-                                            required
-                                            autofocus
-                                        />
-                                        <InputError
-                                            v-for="(error, index) in $page.props.errors"
-                                            class="mt-2"
-                                            :message="error"
-                                        />
+                                            <Textarea
+                                                placeholder="Add user emails here."
+                                                class="text_scroll border-gray-300 dark:border-gray-700 dark:bg-gray-700 dark:text-white text-black focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"
+                                                v-model="form.users"
+                                                required
+                                                autofocus
+                                            />
+                                            <InputError
+                                                v-for="(error, index) in $page
+                                                    .props.errors"
+                                                class="mt-2"
+                                                :message="error"
+                                            />
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="flex justify-end mt-6 w-full">
-                                    <DialogFooter class="sm:justify-start">
-                                        <DialogClose as-child>
+                                    <div class="flex justify-end mt-6 w-full">
+                                        <DialogFooter class="sm:justify-start">
+                                            <DialogClose as-child>
+                                                <Button
+                                                    id="closeBtn"
+                                                    type="button"
+                                                    variant="secondary"
+                                                    class="ml-6 bg-gray-800 dark:bg-gray-200 text-xs text-white dark:text-gray-800 hover:bg-gray-700 dark:hover:bg-white hover:text-white dark:hover:text-gray-800"
+                                                >
+                                                    Close
+                                                </Button>
+                                            </DialogClose>
                                             <Button
-                                                id="closeBtn"
-                                                type="button"
+                                                type="submit"
+                                                :disabled="
+                                                    form.processing ||
+                                                    dataFilled
+                                                "
                                                 variant="secondary"
                                                 class="ml-6 bg-gray-800 dark:bg-gray-200 text-xs text-white dark:text-gray-800 hover:bg-gray-700 dark:hover:bg-white hover:text-white dark:hover:text-gray-800"
                                             >
-                                                Close
+                                                ADD USER
                                             </Button>
-                                        </DialogClose>
-                                        <Button
-                                            type="submit"
-                                            :disabled="
-                                                form.processing || dataFilled
-                                            "
-                                            variant="secondary"
-                                            class="ml-6 bg-gray-800 dark:bg-gray-200 text-xs text-white dark:text-gray-800 hover:bg-gray-700 dark:hover:bg-white hover:text-white dark:hover:text-gray-800"
-                                        >
-                                            ADD USER
-                                        </Button>
-                                    </DialogFooter>
-                                </div>
-                            </form>
-                        </CardContent>
-                    </DialogContent>
-                </Dialog>
+                                        </DialogFooter>
+                                    </div>
+                                </form>
+                            </CardContent>
+                        </DialogContent>
+                    </Dialog>
+                </div>
             </div>
-
-
-            </div>
-
 
             <div class="mt-5">
                 <Table>
                     <TableHeader>
                         <TableRow>
+                            <TableHead class="text-center w-[75px]">
+                                <input
+                                    type="checkbox"
+                                    class="checkbox"
+                                    id="checkPR"
+                                    v-model="checkAll"
+                                    @click="selectAll"
+                                    v-show="showAll"
+                                />
+                                <div
+                                    class="flex justify-center"
+                                    v-if="!showAll"
+                                >
+                                    <button
+                                        for="box"
+                                        class="checkbox px-[6px] h-[18px] flex items-center font-bold"
+                                        @click="unSelectAll"
+                                    >
+                                        <div class="mb-[2px]">-</div>
+                                    </button>
+                                </div>
+                            </TableHead>
                             <TableHead class="w-[100px] px-5">
                                 USER ID
                             </TableHead>
                             <TableHead>Email</TableHead>
-                            <TableHead class="text-center">Added By</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
                         <TableRow v-for="user in group.users" :key="user.id">
                             <TableCell class="text-center">
+                                <input
+                                    type="checkbox"
+                                    class="checkbox"
+                                    id="checkChile"
+                                    @change="updateSelectList(user.id, $event)"
+                                />
+                            </TableCell>
+                            <TableCell class="text-center">
                                 {{ user.id }}
                             </TableCell>
                             <TableCell>{{ user.email }}</TableCell>
-                            <TableCell class="text-center">{{
-                                user.group_user.added_by
-                            }}</TableCell>
                         </TableRow>
                     </TableBody>
                 </Table>
@@ -250,7 +287,6 @@
 <script setup>
 //Imports
 import $ from "jquery";
-import moment from "moment";
 import Dashboard from "@/Pages/Dashboard.vue";
 import InputError from "@/Components/InputError.vue";
 import TextInput from "@/Components/TextInput.vue";
@@ -285,6 +321,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import { error } from "jquery";
 
 //Refs
 const form = useForm({
@@ -308,7 +345,6 @@ const dataFilled = computed(() => {
     } else return true;
 });
 
-
 const userDataFilled = computed(() => {
     if (
         userForm.email.length > 0 &&
@@ -329,7 +365,7 @@ const pw8 = computed(() => {
 
 const submit = () => {
     let users = form.users.split("\n");
-    users = users.filter(user => user.trim() !== '');
+    users = users.filter((user) => user.trim() !== "");
     router.post(
         "/group/user/" + props.group.id,
         {
@@ -346,22 +382,81 @@ const submit = () => {
         }
     );
 };
-const addUser = ()=>{
-    userForm.post('/group/createUser/'+props.group.id,{
-        onSuccess: () => {
-            userForm.reset();
-            $("#closeBtn").trigger("click");
-        },
-    })
-}
+
 const goBack = () => {
     // Go back to the previous page
     window.history.back();
 };
 
+const listLen = props.group.users.length;
+const checkAll = ref(false);
+const showAll = ref(true);
+const selectAll = () => {
+    if (checkAll.value) {
+        $('input[id="checkChile"]').trigger("click");
+    } else {
+        $('input[id="checkChile"]').trigger("click");
+    }
+    showAll.value = true;
+};
+const unSelectAll = () => {
+    $('input[id="checkChile"]').prop("checked", false);
+    selectList.value = [];
+    showAll.value = true;
+    $('input[id="checkPR"]').prop("checked", false);
+};
+const selectList = ref([]);
+const updateSelectList = (id, event) => {
+    //if groups is select
+    if (event.target.checked) {
+        selectList.value.push(id);
+    } else {
+        const index = selectList.value.indexOf(id);
+        if (index !== -1) {
+            selectList.value.splice(index, 1);
+        }
+    }
+    if (selectList.value.length == 0) {
+        $('input[id="checkPR"]').prop("checked", false);
+        showAll.value = true;
+    }
+    if (selectList.value.length > 0 && selectList.value.length <= listLen)
+        showAll.value = false;
+    if (selectList.value.length == listLen) {
+        showAll.value = true;
+        $('input[id="checkPR"]').prop("checked", true);
+    }
+};
+
+const removeUser = () => {
+    if (confirm("Press OK to remove selected user from the group!") == true) {
+        router.delete(
+            "/group/removeUser/" + props.group.id,
+            {
+                data: {
+                    users: selectList.value,
+                },
+            }
+        );
+        selectList.value = []
+        $('input[id="checkPR"]').prop("checked", false);
+        showAll.value = true
+    }
+};
+
+const addUser = () => {
+    userForm.post("/group/createUser/" + props.group.id, {
+        onSuccess: () => {
+            userForm.reset();
+            $("#closeBtn").trigger("click");
+        },
+    });
+};
 </script>
 <style scoped>
 @import "../../../css/button.css";
+@import "../../../css/checkbox.css";
+
 .text_scroll::-webkit-scrollbar {
     width: 0.5rem;
     height: 0.5rem;
