@@ -61,18 +61,18 @@ class DatabaseSeeder extends Seeder
         \App\Models\Projects::create([
             'name' => 'Math exam',
             'created_by' => 3,
-            'admin' => 1
+            'admin' => json_encode(["S98PBH@pte.hu","project@pte.hu"])
         ]);
         \App\Models\Projects::create([
             'name' => 'C++ exam',
             'created_by' => 1,
-            'admin' => 3
+            'admin' => json_encode("project@pte.hu")
         ]);
 
         \App\Models\Projects::create([
             'name' => 'Math exam 2',
             'created_by' => 2,
-            'admin' => 3
+            'admin' => json_encode(["S98PBH@pte.hu","project@pte.hu"])
         ]);
 
         //add 3 user into group 1, user4 into group 2 3
@@ -113,6 +113,71 @@ class DatabaseSeeder extends Seeder
             2,
             3,
         ];
+
         $project->groups()->syncWithoutDetaching($groups);
+
+        //create question
+        \App\Models\Questions::create([
+            'description' => 'what is 1+1',
+            'type' => 'default',
+            'fileUpload'=>'none',
+            'projects_id'=>1
+        ]);
+        \App\Models\Questions::create([
+            'description' => 'what is speedrun',
+            'type' => 'default',
+            'fileUpload'=>'upFile',
+            'projects_id'=>1
+        ]);
+        \App\Models\Questions::create([
+            'description' => 'what is water',
+            'type' => 'default',
+            'fileUpload'=>'upAudio',
+            'projects_id'=>1
+        ]);
+        \App\Models\Questions::create([
+            'description' => 'what is 1+2',
+            'type' => 'multiple',
+            'options'=>json_encode([
+                0,
+                1,
+                2,
+                3,
+            ]),
+            'projects_id'=>1
+        ]);
+        \App\Models\Questions::create([
+            'description' => 'what is 2+2',
+            'type' => 'checkbox',
+            'options'=>json_encode([
+                0,
+                1,
+                2,
+                3
+            ]),
+            'projects_id'=>1
+        ]);
+        \App\Models\Questions::create([
+            'description' => 'select color',
+            'type' => 'checkbox',
+            'options'=>json_encode([
+                "red",
+                "blue",
+                "green",
+                3
+            ]),
+            'projects_id'=>1
+        ]);
+        \App\Models\Questions::create([
+            'description' => 'select color',
+            'type' => 'multiple',
+            'options'=>json_encode([
+                0,
+                "green",
+                2,
+                3,
+            ]),
+            'projects_id'=>1
+        ]);
     }
 }

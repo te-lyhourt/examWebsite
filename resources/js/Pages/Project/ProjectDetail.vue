@@ -13,7 +13,7 @@
         </div>
 
         <!-- Tab  -->
-        <div class="tab">
+        <div class="tab" v-if="!roleUser">
             <button
                 class="tablinks"
                 @click="openCity($event, 'Question')"
@@ -24,12 +24,19 @@
             <button class="tablinks" @click="openCity($event, 'Group')">
                 Group
             </button>
+            <button class="tablinks" @click="openCity($event, 'Admin')">
+                Admin
+            </button>
         </div>
 
         <!-- Tab content-->
 
         <!-- if admin -->
-        <div id="Question" class="tabcontent">
+        <div
+            id="Question"
+            class="tabcontent"
+            v-if="tabe == 'Question' && !roleUser"
+        >
             <div>
                 <div class="flex w-full justify-between">
                     <Button
@@ -41,6 +48,12 @@
                     </Button>
 
                     <div class="flex justify-end mr-4" v-if="!roleUser">
+                        <button
+                            class="buttonStyle flex items-center mx-2"
+                            @click="goTest(project.id)"
+                        >
+                            View Questions as User
+                        </button>
                         <Dialog>
                             <DialogTrigger as-child>
                                 <Button variant="outline" class="buttonStyle">
@@ -69,6 +82,9 @@
                                                     class="block font-medium text-sm text-gray-800 dark:text-white"
                                                 >
                                                     Task description
+                                                    <span style="color: red"
+                                                        >*</span
+                                                    >
                                                 </span>
                                                 <Textarea
                                                     placeholder="Add description"
@@ -110,8 +126,11 @@
                                                         >
                                                             Default
                                                             <span class="ml-2"
-                                                                >( text, file,
-                                                                audio )</span
+                                                                >( Student
+                                                                Answer in text
+                                                                input, upload
+                                                                file or audio
+                                                                record)</span
                                                             >
                                                         </SelectItem>
                                                         <SelectItem
@@ -119,8 +138,9 @@
                                                         >
                                                             Multiple Choice<span
                                                                 class="ml-2"
-                                                                >( Can Select One Options
-                                                                )</span
+                                                                >( Student
+                                                                Select One
+                                                                Options )</span
                                                             >
                                                         </SelectItem>
                                                         <SelectItem
@@ -128,12 +148,67 @@
                                                         >
                                                             CheckBox
                                                             <span class="ml-2"
-                                                                >( Can Select Multple
+                                                                >( Student
+                                                                Select Multiple
                                                                 Options )</span
                                                             >
                                                         </SelectItem>
                                                     </SelectContent>
                                                 </Select>
+                                            </div>
+                                            <div
+                                                class="flex flex-col space-y-1.5 options"
+                                                v-if="
+                                                    questionForm.type ==
+                                                    'default'
+                                                "
+                                            >
+                                                <div>
+                                                    <div class="ml-2">
+                                                        <input
+                                                            class="!bg-black m-2"
+                                                            type="radio"
+                                                            id="none"
+                                                            value="none"
+                                                            v-model="
+                                                                questionForm.fileUpload
+                                                            "
+                                                        />
+                                                        <label for="none"
+                                                            >None</label
+                                                        >
+                                                    </div>
+                                                    <div class="ml-2">
+                                                        <input
+                                                            class="!bg-black m-2"
+                                                            type="radio"
+                                                            id="upFile"
+                                                            value="upFile"
+                                                            v-model="
+                                                                questionForm.fileUpload
+                                                            "
+                                                        />
+                                                        <label for="upFile"
+                                                            >Allow Upload
+                                                            file</label
+                                                        >
+                                                    </div>
+                                                    <div class="ml-2">
+                                                        <input
+                                                            class="!bg-black m-2"
+                                                            type="radio"
+                                                            id="upAudio"
+                                                            v-model="
+                                                                questionForm.fileUpload
+                                                            "
+                                                            value="upAudio"
+                                                        />
+                                                        <label for="upAudio"
+                                                            >Aloow Record
+                                                            Audio</label
+                                                        >
+                                                    </div>
+                                                </div>
                                             </div>
                                             <div
                                                 class="flex flex-col space-y-1.5 options"
@@ -159,8 +234,8 @@
                                                             >*</span
                                                         ></span
                                                     >
-                                                    <TextInput
-                                                        class="mt-1 block w-full"
+                                                    <input
+                                                        class="mt-1 block w-full inputStyle"
                                                         v-model="
                                                             questionForm
                                                                 .options[0]
@@ -175,8 +250,8 @@
                                                             >*</span
                                                         ></span
                                                     >
-                                                    <TextInput
-                                                        class="mt-1 block w-full"
+                                                    <input
+                                                        class="mt-1 block w-full inputStyle"
                                                         v-model="
                                                             questionForm
                                                                 .options[1]
@@ -186,8 +261,8 @@
                                                 </div>
                                                 <div>
                                                     <span>Options 3</span>
-                                                    <TextInput
-                                                        class="mt-1 block w-full"
+                                                    <input
+                                                        class="mt-1 block w-full inputStyle"
                                                         v-model="
                                                             questionForm
                                                                 .options[2]
@@ -196,8 +271,8 @@
                                                 </div>
                                                 <div>
                                                     <span>Options 4</span>
-                                                    <TextInput
-                                                        class="mt-1 block w-full"
+                                                    <input
+                                                        class="mt-1 block w-full inputStyle"
                                                         v-model="
                                                             questionForm
                                                                 .options[3]
@@ -206,8 +281,8 @@
                                                 </div>
                                                 <div>
                                                     <span>Options 5</span>
-                                                    <TextInput
-                                                        class="mt-1 block w-full"
+                                                    <input
+                                                        class="mt-1 block w-full inputStyle"
                                                         v-model="
                                                             questionForm
                                                                 .options[4]
@@ -216,8 +291,8 @@
                                                 </div>
                                                 <div>
                                                     <span>Options 6</span>
-                                                    <TextInput
-                                                        class="mt-1 block w-full"
+                                                    <input
+                                                        class="mt-1 block w-full inputStyle"
                                                         v-model="
                                                             questionForm
                                                                 .options[5]
@@ -250,8 +325,8 @@
                                                             >*</span
                                                         ></span
                                                     >
-                                                    <TextInput
-                                                        class="mt-1 block w-full"
+                                                    <input
+                                                        class="mt-1 block w-full inputStyle"
                                                         v-model="
                                                             questionForm
                                                                 .options[0]
@@ -266,8 +341,8 @@
                                                             >*</span
                                                         ></span
                                                     >
-                                                    <TextInput
-                                                        class="mt-1 block w-full"
+                                                    <input
+                                                        class="mt-1 block w-full inputStyle"
                                                         v-model="
                                                             questionForm
                                                                 .options[1]
@@ -277,8 +352,8 @@
                                                 </div>
                                                 <div>
                                                     <span>Options 3</span>
-                                                    <TextInput
-                                                        class="mt-1 block w-full"
+                                                    <input
+                                                        class="mt-1 block w-full inputStyle"
                                                         v-model="
                                                             questionForm
                                                                 .options[2]
@@ -288,8 +363,8 @@
 
                                                 <div>
                                                     <span>Options 4</span>
-                                                    <TextInput
-                                                        class="mt-1 block w-full"
+                                                    <input
+                                                        class="mt-1 block w-full inputStyle"
                                                         v-model="
                                                             questionForm
                                                                 .options[3]
@@ -298,8 +373,8 @@
                                                 </div>
                                                 <div>
                                                     <span>Options 5</span>
-                                                    <TextInput
-                                                        class="mt-1 block w-full"
+                                                    <input
+                                                        class="mt-1 block w-full inputStyle"
                                                         v-model="
                                                             questionForm
                                                                 .options[4]
@@ -308,8 +383,8 @@
                                                 </div>
                                                 <div>
                                                     <span>Options 6</span>
-                                                    <TextInput
-                                                        class="mt-1 block w-full"
+                                                    <input
+                                                        class="mt-1 block w-full inputStyle"
                                                         v-model="
                                                             questionForm
                                                                 .options[5]
@@ -335,8 +410,8 @@
                                                 <Button
                                                     type="submit"
                                                     :disabled="
-                                                        form.processing ||
-                                                        dataFilled
+                                                        questionForm.processing ||
+                                                        questionFilled
                                                     "
                                                     variant="secondary"
                                                     class="ml-6 bg-gray-800 dark:bg-gray-200 text-xs text-white dark:text-gray-800 hover:bg-gray-700 dark:hover:bg-white hover:text-white dark:hover:text-gray-800"
@@ -379,15 +454,18 @@
                                     </div>
                                 </TableHead>
                                 <TableHead class="w-[100px] px-5">
-                                    Group ID
+                                    Question ID
                                 </TableHead>
-                                <TableHead>Grop name</TableHead>
+                                <TableHead>Question Description</TableHead>
+                                <TableHead class="text-center">
+                                    Type
+                                </TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             <TableRow
-                                v-for="group in project.groups"
-                                :key="group.id"
+                                v-for="question in project.questions"
+                                :key="question.id"
                             >
                                 <TableCell class="text-center">
                                     <input
@@ -395,22 +473,47 @@
                                         class="checkbox"
                                         id="checkChile"
                                         @change="
-                                            updateSelectList(group.id, $event)
+                                            updateSelectList(
+                                                question.id,
+                                                $event
+                                            )
                                         "
                                     />
                                 </TableCell>
                                 <TableCell class="text-center">
-                                    {{ group.id }}
+                                    {{ question.id }}
                                 </TableCell>
-                                <TableCell>{{ group.name }}</TableCell>
+                                <TableCell>{{
+                                    question.description
+                                }}</TableCell>
+                                <TableCell class="text-center"
+                                    >{{ question.type }}
+                                    <span v-if="question.fileUpload != null">
+                                        <div
+                                            v-if="
+                                                question.fileUpload == 'upFile'
+                                            "
+                                        >
+                                            (file)
+                                        </div>
+                                        <div
+                                            v-if="
+                                                question.fileUpload == 'upAudio'
+                                            "
+                                        >
+                                            (audio)
+                                        </div>
+                                    </span>
+                                </TableCell>
                             </TableRow>
                         </TableBody>
                     </Table>
                 </div>
             </div>
         </div>
+        <!--if user-->
 
-        <div id="Group" class="tabcontent">
+        <div id="Group" class="tabcontent" v-if="tabe == 'Group' && !roleUser">
             <div>
                 <div class="flex w-full justify-between">
                     <Button
@@ -451,7 +554,7 @@
                                                         >*</span
                                                     ></span
                                                 >
-                                                <TextInput
+                                                <input
                                                     class="mt-1 block w-full"
                                                     v-model="form.group"
                                                     required
@@ -468,14 +571,14 @@
                                                 class="sm:justify-start"
                                             >
                                                 <DialogClose as-child>
-                                                    <Button
+                                                    <button
                                                         id="closeBtn"
                                                         type="button"
                                                         variant="secondary"
                                                         class="ml-6 bg-gray-800 dark:bg-gray-200 text-xs text-white dark:text-gray-800 hover:bg-gray-700 dark:hover:bg-white hover:text-white dark:hover:text-gray-800"
                                                     >
                                                         Close
-                                                    </Button>
+                                                    </button>
                                                 </DialogClose>
                                                 <Button
                                                     type="submit"
@@ -554,6 +657,153 @@
                 </div>
             </div>
         </div>
+
+        <div id="Admin" class="tabcontent" v-if="tabe == 'Admin' && !roleUser">
+            <div>
+                <div class="flex w-full justify-between">
+                    <Button
+                        variant="outline"
+                        class="buttonStyle ml-2"
+                        @click="removeAdmin"
+                    >
+                        Remove Admin
+                    </Button>
+                    <div class="flex justify-end mr-4" v-if="!roleUser">
+                        <Dialog>
+                            <DialogTrigger as-child>
+                                <Button variant="outline" class="buttonStyle">
+                                    ADD Admin
+                                </Button>
+                            </DialogTrigger>
+                            <DialogContent
+                                class="sm:max-w-md bg-white dark:bg-gray-800 text-xs dark:text-white text-gray-800"
+                            >
+                                <DialogHeader class="p-6 pt-0">
+                                    <DialogTitle
+                                        class="text-gray-800 dark:text-white text-center text-3xl"
+                                        >Add Admin to Project</DialogTitle
+                                    >
+                                </DialogHeader>
+                                <CardContent>
+                                    <form
+                                        @submit.prevent="addAdmin(project.id)"
+                                    >
+                                        <div
+                                            class="grid items-center w-full gap-4"
+                                        >
+                                            <div
+                                                class="flex flex-col space-y-1.5"
+                                            >
+                                                <span
+                                                    class="block font-medium text-sm text-gray-800 dark:text-white"
+                                                    >User Email
+                                                    <span style="color: red"
+                                                        >*</span
+                                                    ></span
+                                                >
+                                                <Textarea
+                                                    id="email"
+                                                    class="text_scroll border-gray-300 dark:border-gray-700 dark:bg-gray-700 dark:text-white text-black focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"
+                                                    v-model="adminForm.email"
+                                                    required
+                                                />
+                                                <InputError
+                                                    v-for="(
+                                                        error, index
+                                                    ) in $page.props.errors"
+                                                    class="mt-2"
+                                                    :message="error"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div class="flex justify-end mt-6">
+                                            <DialogFooter
+                                                class="sm:justify-start"
+                                            >
+                                                <DialogClose as-child>
+                                                    <Button
+                                                        id="closeBtn"
+                                                        type="button"
+                                                        variant="secondary"
+                                                        class="ml-6 bg-gray-800 dark:bg-gray-200 text-xs text-white dark:text-gray-800 hover:bg-gray-700 dark:hover:bg-white hover:text-white dark:hover:text-gray-800"
+                                                    >
+                                                        Close
+                                                    </Button>
+                                                </DialogClose>
+                                                <Button
+                                                    type="submit"
+                                                    :disabled="
+                                                        adminForm.processing ||
+                                                        adminFilled
+                                                    "
+                                                    variant="secondary"
+                                                    class="ml-6 bg-gray-800 dark:bg-gray-200 text-xs text-white dark:text-gray-800 hover:bg-gray-700 dark:hover:bg-white hover:text-white dark:hover:text-gray-800"
+                                                >
+                                                    ADD Admin
+                                                </Button>
+                                            </DialogFooter>
+                                        </div>
+                                    </form>
+                                </CardContent>
+                            </DialogContent>
+                        </Dialog>
+                    </div>
+                </div>
+
+                <div class="mt-5" v-if="!roleUser">
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead class="w-[100px] text-center">
+                                    <input
+                                        type="checkbox"
+                                        class="checkbox"
+                                        id="checkPR"
+                                        v-model="checkAll"
+                                        @click="selectAll"
+                                        v-show="showAll"
+                                    />
+                                    <div
+                                        class="flex justify-center"
+                                        v-if="!showAll"
+                                    >
+                                        <button
+                                            for="box"
+                                            class="checkbox px-[6px] h-[18px] flex items-center font-bold"
+                                            @click="unSelectAll"
+                                        >
+                                            <div class="mb-[2px]">-</div>
+                                        </button>
+                                    </div>
+                                </TableHead>
+                                <TableHead class="px-5 text-center">
+                                    Admin
+                                </TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            <TableRow
+                                v-for="admin in JSON.parse(project.admin)"
+                            >
+                                <TableCell class="text-center">
+                                    <input
+                                        type="checkbox"
+                                        class="checkbox"
+                                        id="checkChile"
+                                        @change="
+                                            updateSelectList(admin, $event)
+                                        "
+                                    />
+                                </TableCell>
+                                <TableCell class="text-center">
+                                    {{ admin }}
+                                </TableCell>
+                            </TableRow>
+                        </TableBody>
+                    </Table>
+                </div>
+            </div>
+        </div>
     </Dashboard>
 </template>
 <script setup>
@@ -562,11 +812,11 @@ import $ from "jquery";
 import moment from "moment";
 import Dashboard from "@/Pages/Dashboard.vue";
 import InputError from "@/Components/InputError.vue";
-import TextInput from "@/Components/TextInput.vue";
-import { Head, useForm, usePage, router } from "@inertiajs/vue3";
-import { computed, ref, onMounted } from "vue";
-import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { Head, useForm, usePage, router } from "@inertiajs/vue3";
+import { computed, ref, onMounted, reactive } from "vue";
+import { Textarea } from "@/components/ui/textarea";
+
 import { CardContent } from "@/components/ui/card";
 import {
     Table,
@@ -630,17 +880,20 @@ const goBack = () => {
     // Go back to the previous page
     window.history.back();
 };
-
+const tabe = ref();
+let noQ = true;
 onMounted(() => {
     //check user role
     const role = JSON.parse(page.props.auth.user.role)[0];
+    if (props.project.questions[0] != undefined) noQ = false;
     if (role == "user") roleUser.value = true;
     else roleUser.value = false;
 
     $("#default").trigger("click");
 });
 
-const listLen = props.project.groups.length;
+var listLen = props.project.questions.length;
+
 const checkAll = ref(false);
 const showAll = ref(true);
 const selectAll = () => {
@@ -658,10 +911,10 @@ const unSelectAll = () => {
     $('input[id="checkPR"]').prop("checked", false);
 };
 const selectList = ref([]);
-const updateSelectList = (id, event) => {
+const updateSelectList = (id, evt) => {
     //if groups is select
-    if (event.target.checked) {
-        selectList.value.push(id);
+    if (evt.target.checked) {
+        if (!selectList.value.includes(id)) selectList.value.push(id);
     } else {
         const index = selectList.value.indexOf(id);
         if (index !== -1) {
@@ -696,10 +949,14 @@ const removeGroup = () => {
 };
 
 //taps
-const openCity = (evt, cityName) => {
+const openCity = (evt, tabName) => {
+    tabe.value = tabName;
+    if (tabName == "Question") listLen = props.project.questions.length;
+    if (tabName == "Group") listLen = props.project.groups.length;
     //uncheck all checkbox
     selectList.value = [];
     showAll.value = true;
+    checkAll.value = false;
     $('input[id="checkPR"]').prop("checked", false);
     $('input[id="checkChile"]').prop("checked", false);
 
@@ -716,28 +973,163 @@ const openCity = (evt, cityName) => {
     tablinks = document.getElementsByClassName("tablinks");
     for (i = 0; i < tablinks.length; i++) {
         tablinks[i].className = tablinks[i].className.replace(" active", "");
+        tablinks[i].disabled = false;
     }
 
     // Show the current tab, and add an "active" class to the button that opened the tab
-    document.getElementById(cityName).style.display = "block";
     evt.target.className += " active";
+    evt.target.disabled = true;
 };
 
 //question
 const questionForm = useForm({
-    description: "default",
+    description: "",
     type: "",
     options: [],
+    fileUpload: "none",
+    projects_id: props.project.id,
 });
-const addQuestion = () => {};
-const removeQuestion = () => {};
+
+const addQuestion = () => {
+    questionForm.post(route("question.add"), {
+        onSuccess: () => {
+            questionForm.reset();
+            $("#closeBtn").trigger("click");
+        },
+        onError: (errors) => {
+            console.log(errors);
+        },
+    });
+};
+const questionFilled = computed(() => {
+    //check if description and type is filled
+    if (questionForm.description.length > 0 && questionForm.type.length > 0) {
+        //check type if not default
+        if (questionForm.type != "default") {
+            //check if options length is 2 or more
+            if (questionForm.options.length >= 2) {
+                //check if not fill
+                if (
+                    questionForm.options[0].length == 0 ||
+                    questionForm.options[1].length == 0
+                )
+                    return true;
+                //if fill
+                else return false;
+            }
+            //option length smaller than 2, button disable
+            else return true;
+        }
+        //if it default then button is not enable
+        else return false;
+    }
+    //if not disable the button
+    else return true;
+});
+
+const removeQuestion = () => {
+    if (confirm("Press OK to delete selected Question!") == true) {
+        router.delete("/question/delete", {
+            data: {
+                questions: selectList.value,
+            },
+        });
+        //uncheck all checkbox
+        selectList.value = [];
+        showAll.value = true;
+        checkAll.value = false;
+        $('input[id="checkPR"]').prop("checked", false);
+        $('input[id="checkChile"]').prop("checked", false);
+    }
+};
+
+//view test
+const goTest = (id) => {
+    router.get("/project/test/" + id);
+};
+
+//admin
+const adminForm = useForm({
+    email: "",
+});
+const adminFilled = computed(() => {
+    if (adminForm.email.length > 0) {
+        return false;
+    } else return true;
+});
+const addAdmin = (id) => {
+    let users = adminForm.email.split("\n");
+    users = users.filter((user) => user.trim() !== "");
+    users = [...JSON.parse(props.project.admin), ...users];
+    users = [...new Set(users)];
+
+    router.post(
+        "/project/admin/" + id,
+        {
+            users: users,
+        },
+        {
+            onSuccess: () => {
+                adminForm.reset();
+                $("#closeBtn").trigger("click");
+            },
+            onError: (errors) => {
+                errors = Object.values(errors);
+            },
+        }
+    );
+};
+const removeAdmin = () => {
+    if (
+        confirm("Press OK to remove selected admin from the project!") == true
+    ) {
+        var select = selectList.value
+        var admin = JSON.parse(props.project.admin)
+        admin = admin.filter(item => !select.includes(item));
+        console.log(admin)
+        router.delete("/project/removeAdmin/" + props.project.id, {
+            data: {
+                admins: admin,
+            },
+        });
+        selectList.value = [];
+        $('input[id="checkPR"]').prop("checked", false);
+        showAll.value = true;
+    }
+};
 </script>
 <style scoped>
 @import "../../../css/button.css";
 @import "../../../css/checkbox.css";
 @import "../../../css/tabs.css";
-.options{
+@import "../../../css/textinput.css";
+.options {
     overflow: auto;
     max-height: 200px;
+}
+.taskList {
+    width: 180px;
+    min-height: 200px;
+    border: white solid 1px;
+}
+
+.buttonList::-webkit-scrollbar,
+.options::-webkit-scrollbar {
+    width: 0.5rem;
+    height: 0.5rem;
+}
+.buttonList::-webkit-scrollbar-thumb,
+.options::-webkit-scrollbar-thumb {
+    border-radius: calc(0.5rem - 4px);
+    background-color: hsl(240 5% 64.9% / 0.3);
+}
+.buttonList ::-webkit-scrollbar-track,
+.options::-webkit-scrollbar-track {
+    background-color: hsl(240 3.7% 15.9%);
+}
+.active {
+    background-color: rgb(55 65 81 / var(--tw-bg-opacity));
+    color: rgb(255 255 255 / var(--tw-text-opacity));
+    cursor: default !important;
 }
 </style>

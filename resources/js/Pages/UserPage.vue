@@ -329,7 +329,7 @@ const selectList = ref([]);
 const updateSelectList = (id, event) => {
     //if groups is select
     if (event.target.checked) {
-        selectList.value.push(id);
+        if (!selectList.value.includes(id)) selectList.value.push(id);
     } else {
         const index = selectList.value.indexOf(id);
         if (index !== -1) {

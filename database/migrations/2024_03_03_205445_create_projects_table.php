@@ -13,9 +13,12 @@ return new class extends Migration
     {
         Schema::create('projects', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->unique();;
+            $table->string('name')->unique();
+            $table->text('description')->nullable();
+            $table->integer('questNum')->nullable();
+            $table->integer('repeatNum')->nullable();
             $table->foreignIdFor(\App\Models\User::class,'created_by');
-            $table->foreignIdFor(\App\Models\User::class,'admin')->nullable();
+            $table-> json('admin')->nullable();
             $table->timestamps();
         });
     }

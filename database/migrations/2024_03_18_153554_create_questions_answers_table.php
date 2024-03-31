@@ -11,13 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('questions', function (Blueprint $table) {
+        Schema::create('questions_answers', function (Blueprint $table) {
             $table->id();
-            $table->text('description');
-            $table->string('type');
-            $table->json('options')->nullable();
-            $table->string('fileUpload')->nullable();
-            $table->foreignIdFor(\App\Models\Projects::class,'projects_id')->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -27,6 +22,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('questions');
+        Schema::dropIfExists('questions_answers');
     }
 };

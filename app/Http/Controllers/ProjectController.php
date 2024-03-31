@@ -28,7 +28,7 @@ class ProjectController extends Controller
         if ($userRole == 'project admin') {
             //only list project where user is the admin of that project or project created by user
 
-            $projects = Projects::where('admin', $user->id)->orWhere('created_by', $user->id)->orderBy('created_at', 'desc')->get();
+            $projects = Projects::whereJsonContains('admin', $user->id)->orWhere('created_by', $user->id)->orderBy('created_at', 'desc')->get();
             return Inertia('Project/ProjectPage', [
                 'projects' => $projects
             ]);
@@ -59,14 +59,20 @@ class ProjectController extends Controller
         // Validation rules
         $validator = $request->validate([
             'name' => 'required|string|unique:projects,name',
+            'questNum'=>'integer',
+            'repeatNum'=>'integer',
             'created_by' => 'required|exists:users,id',
         ]);
         //create group
         Projects::create([
             'name' => $validator['name'],
+            'description'=>$request->description,
+            'questNum'=>$validator['questNum'],
+            'repeatNum'=>$validator['repeatNum'],
             'created_by' => $validator['created_by'],
         ]);
     }
+    //project detial page
     public function projectDetail(Request $request)
     {
         $request->merge(['id' => $request->route('id')]);
@@ -76,8 +82,7 @@ class ProjectController extends Controller
         ]);
         $project = Projects::findOrFail($validator['id']);
         return Inertia('Project/ProjectDetail', [
-            'project' => $project,
-            'groups' => $project->load('groups')
+            'project' => $project->load('groups','questions'),
         ]);
     }
 
@@ -95,18 +100,14 @@ class ProjectController extends Controller
     }
     public function removeGroup(Request $request, $id)
     {
-        // Validate the request data if needed
-        $validat = $request->validate([
-            'groups.*' => 'required|integer|exists:users,id'
-        ]);
-
         // Find the group
         $project = Projects::find($id);
 
         // Detach users from the group
-        $project->groups()->detach($validat['groups']);
+        $project->groups()->detach($request->groups);
     }
-    public function delete(Request $request){
+    public function delete(Request $request)
+    {
         $validator = $request->validate([
             //validataion rule
             'projects.*' => 'required|integer|exists:projects,id'
@@ -116,22 +117,60 @@ class ProjectController extends Controller
 
     public function addAdmin(Request $request, $id)
     {
-        // Find the project by ID
+        $validatUser = $request->validate(
+            //validataion rule
+            [
+                'users.*' => 'required|email|exists:users,email',
+            ],
+            //custome error messsage
+            [
+                'users.*.required' => 'Error: email is required.',
+                'users.*.email' => 'Error: The :input must be a valid email address.',
+                'users.*.exists' => 'Error: The :input does not exist.',
+            ]
+        );
         $project = Projects::find($id);
-
-        $validateUser = $request->validate([
-            'email' => 'required|email|exists:users,email'
-        ]);
-
-        // Find the user by email
-        $user = User::where('email', $validateUser['email'])->first();
-        $role = json_decode($user->role)[0];
-
-        if($role=='user'){
-            $user->role = ["project admin"];
-            $user->save();
-        } 
-        $project->admin = $user->id;
+        $project->admin = $validatUser['users'];
         $project->save();
+
+        //change user role from user to project admin if needed
+        $users = User::whereIn('email', $validatUser['users'])->get();
+        foreach ($users as $user) {
+            $role = json_decode($user->role)[0];
+            if ($role == 'user') {
+                $user->role = ["project admin"];
+                $user->save();
+            }
+        }
+    }
+    public function removeAdmin(Request $request, $id)
+    {
+        // Validate the request data if needed
+
+        // Find the group
+        $project = Projects::find($id);
+        $project->admin = $request->admins;
+        $project->save();
+    }
+    //test page
+    public function testPage(Request $request)
+    {
+        $request->merge(['id' => $request->route('id')]);
+
+        $validator = $request->validate([
+            'id' => 'required|integer|exists:projects,id'
+        ]);
+        $project = Projects::findOrFail($validator['id']);
+
+        $project = $project->load(['questions.answers' => function ($query) {
+            $user = Auth::user();
+            $query->where('user_id', $user->id);
+        }]);
+
+
+        return Inertia('Project/testPage', [
+            //load project with questions and answer
+            'project' => $project
+        ]);
     }
 }

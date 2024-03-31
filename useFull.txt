@@ -8,3 +8,12 @@ php artisan migrate:fresh --force
 
 - Seed
 php artisan db:seed
+
+-php google drive
+https://github.com/sazaamout/gDrive/tree/master?tab=readme-ov-file
+
+-userful link for google drive login and upload file:
+https://www.youtube.com/watch?v=abyoZC6dLCc
+
+-vue libaray to do the login
+https://devbaji.github.io/vue3-google-login/#googletokenlogin-function

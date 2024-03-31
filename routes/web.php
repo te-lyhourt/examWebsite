@@ -1,12 +1,15 @@
 <?php
 
+use App\Http\Controllers\answerController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\UserController;
+use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Auth;
 
 Route::get('/', function(){
@@ -37,6 +40,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/project/admin/{id}',[ProjectController::class,'addAdmin'])->name('project.addAdmin');
     Route::delete('/project/delete',[ProjectController::class,'delete'])->name('project.delete');
     Route::delete('/project/removeGroup/{id}',[ProjectController::class,'removeGroup'])->name('project.removeGroup');
+    Route::get('/project/test/{id}',[ProjectController::class,'testPage'])->name('page.test');
+    Route::delete('/project/removeAdmin/{id}',[ProjectController::class,'removeAdmin'])->name('project.removeAdmin');
 
     //group 
     Route::get('/group',[GroupController::class,'index'])->name('page.group');
@@ -47,9 +52,16 @@ Route::middleware('auth')->group(function () {
     Route::delete('/group/delete',[GroupController::class,'delete'])->name('group.delete');
     Route::delete('/group/removeUser/{id}',[GroupController::class,'removeUser'])->name('group.removeUser');
     
+    //question
+    Route::post('/question/add',[QuestionController::class,'store'])->name('question.add');
+    Route::delete('/question/delete',[QuestionController::class,'delete'])->name('question.delete');
+
+    //answer
+    Route::post('/answer/add',[answerController::class,'store'])->name('answer.add');
+    Route::patch('/answer/update/{id}', [answerController::class, 'update'])->name('answer.update');
 
     // Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    // Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    
     // Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 

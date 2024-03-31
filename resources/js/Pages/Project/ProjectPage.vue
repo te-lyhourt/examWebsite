@@ -11,6 +11,7 @@
             </div>
             <div class="flex w-full justify-between">
                 <Button
+                    v-if="!roleUser"
                     variant="outline"
                     class="buttonStyle ml-2"
                     @click="deleteProject"
@@ -18,6 +19,7 @@
                     Delete Project
                 </Button>
                 <div class="flex justify-end mr-4">
+
                     <Dialog v-if="!roleUser">
                         <DialogTrigger as-child>
                             <Button variant="outline" class="buttonStyle">
@@ -45,7 +47,6 @@
                                                 ></span
                                             >
                                             <TextInput
-                                                id="name"
                                                 class="mt-1 block w-full"
                                                 v-model="form.name"
                                                 required
@@ -55,6 +56,67 @@
                                                 class="mt-2"
                                                 :message="form.errors.name"
                                             />
+                                        </div>
+                                        <div class="flex flex-col space-y-1.5">
+                                            <span
+                                                class="block font-medium text-sm text-gray-800 dark:text-white"
+                                                >Description
+                                            </span>
+                                            <textarea
+                                                class="text_scroll border-gray-300 dark:border-gray-700 dark:bg-gray-700 dark:text-white text-black focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"
+                                                v-model="form.description"
+                                            />
+                                            <InputError
+                                                class="mt-2"
+                                                :message="
+                                                    form.errors.description
+                                                "
+                                            />
+                                        </div>
+                                        <div class="flex flex-col space-y-1.5">
+                                            <span
+                                                class="block font-medium text-sm text-gray-800 dark:text-white"
+                                                >Number of question for each
+                                                student
+                                            </span>
+                                            <TextInput
+                                                type="number"
+                                                min="1"
+                                                class="mt-1 block w-full"
+                                                v-model="form.questNum"
+                                            />
+                                            <InputError
+                                                class="mt-2"
+                                                :message="form.errors.questNum"
+                                            />
+                                            <h6 class="text-gray-500">
+                                                By default each student get all
+                                                the questions in project.
+                                            </h6>
+                                        </div>
+                                        <div class="flex flex-col space-y-1.5">
+                                            <span
+                                                class="block font-medium text-sm text-gray-800 dark:text-white"
+                                                >Number of Reapeat for each
+                                                question
+                                                <span style="color: red"
+                                                    >*</span
+                                                ></span
+                                            >
+                                            <TextInput
+                                                type="number"
+                                                min="1"
+                                                class="mt-1 block w-full"
+                                                v-model="form.repeatNum"
+                                            />
+                                            <InputError
+                                                class="mt-2"
+                                                :message="form.errors.repeatNum"
+                                            />
+                                            <h6 class="text-gray-500">
+                                                By default each question appear
+                                                one time.
+                                            </h6>
                                         </div>
                                     </div>
                                     <div class="flex justify-end mt-6">
@@ -96,6 +158,7 @@
                         <TableRow>
                             <TableHead class="text-center w-[75px]">
                                 <input
+                                    v-if="!roleUser"
                                     type="checkbox"
                                     class="checkbox"
                                     id="checkPR"
@@ -132,6 +195,7 @@
                         <TableRow v-for="project in projects" :key="project.id">
                             <TableCell class="text-center">
                                 <input
+                                    v-if="!roleUser"
                                     type="checkbox"
                                     class="checkbox"
                                     id="checkChile"
@@ -151,110 +215,6 @@
                                     )
                                 }}
                             </TableCell>
-                            <TableCell class="text-center" v-if="!roleUser">
-                                <div v-if="project.admin != null">
-                                    {{ project.admin }}
-                                </div>
-                                <div v-else>
-                                    <Dialog v-if="!roleUser">
-                                        <DialogTrigger as-child>
-                                            <Button
-                                                variant="outline"
-                                                class="buttonStyle"
-                                            >
-                                                ADD Admin
-                                            </Button>
-                                        </DialogTrigger>
-                                        <DialogContent
-                                            class="sm:max-w-md bg-white dark:bg-gray-800 text-xs dark:text-white text-gray-800"
-                                        >
-                                            <DialogHeader class="p-6 pt-0">
-                                                <DialogTitle
-                                                    class="text-gray-800 dark:text-white text-center text-3xl"
-                                                    >Add Admin to
-                                                    Project</DialogTitle
-                                                >
-                                            </DialogHeader>
-                                            <CardContent>
-                                                <form
-                                                    @submit.prevent="
-                                                        addAdmin(project.id)
-                                                    "
-                                                >
-                                                    <div
-                                                        class="grid items-center w-full gap-4"
-                                                    >
-                                                        <div
-                                                            class="flex flex-col space-y-1.5"
-                                                        >
-                                                            <span
-                                                                class="block font-medium text-sm text-gray-800 dark:text-white"
-                                                                >User Email
-                                                                <span
-                                                                    style="
-                                                                        color: red;
-                                                                    "
-                                                                    >*</span
-                                                                ></span
-                                                            >
-                                                            <TextInput
-                                                                id="email"
-                                                                class="mt-1 block w-full"
-                                                                v-model="
-                                                                    adminForm.email
-                                                                "
-                                                                required
-                                                                autofocus
-                                                                autocomplete="email"
-                                                            />
-                                                            <InputError
-                                                                class="mt-2"
-                                                                :message="
-                                                                    adminForm
-                                                                        .errors
-                                                                        .email
-                                                                "
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                    <div
-                                                        class="flex justify-end mt-6"
-                                                    >
-                                                        <DialogFooter
-                                                            class="sm:justify-start"
-                                                        >
-                                                            <DialogClose
-                                                                as-child
-                                                            >
-                                                                <Button
-                                                                    id="closeBtn"
-                                                                    type="button"
-                                                                    variant="secondary"
-                                                                    class="ml-6 bg-gray-800 dark:bg-gray-200 text-xs text-white dark:text-gray-800 hover:bg-gray-700 dark:hover:bg-white hover:text-white dark:hover:text-gray-800"
-                                                                >
-                                                                    Close
-                                                                </Button>
-                                                            </DialogClose>
-                                                            <Button
-                                                                type="submit"
-                                                                :disabled="
-                                                                    adminForm.processing ||
-                                                                    adminFilled
-                                                                "
-                                                                variant="secondary"
-                                                                class="ml-6 bg-gray-800 dark:bg-gray-200 text-xs text-white dark:text-gray-800 hover:bg-gray-700 dark:hover:bg-white hover:text-white dark:hover:text-gray-800"
-                                                            >
-                                                                ADD Admin
-                                                            </Button>
-                                                        </DialogFooter>
-                                                    </div>
-                                                </form>
-                                            </CardContent>
-                                        </DialogContent>
-                                    </Dialog>
-                                </div>
-                            </TableCell>
-
                             <TableCell class="text-center">
                                 <Button
                                     variant="outline"
@@ -300,6 +260,7 @@ import {
     DialogTrigger,
     DialogClose,
 } from "@/components/ui/dialog";
+import Textarea from "@/components/ui/textarea/Textarea.vue";
 //Uses
 
 //Refs
@@ -309,23 +270,18 @@ const roleUser = ref(false);
 const page = usePage();
 const form = useForm({
     name: "",
+    description: "",
+    questNum: "",
+    repeatNum: "",
     created_by: parseInt(page.props.auth.user.id),
 });
-const adminForm = useForm({
-    email: "",
-});
+
 //Props $ Emit
 const props = defineProps({ projects: Object });
 
 //Computed
 const dataFilled = computed(() => {
     if (form.name.length > 0) {
-        return false;
-    } else return true;
-});
-
-const adminFilled = computed(() => {
-    if (adminForm.email.length > 0) {
         return false;
     } else return true;
 });
@@ -349,17 +305,6 @@ const submit = () => {
     });
 };
 
-const addAdmin = (id) => {
-    adminForm.post("/project/admin/" + id, {
-        onSuccess: () => {
-            adminForm.reset();
-            $("#closeBtn").trigger("click");
-        },
-        onError(errors) {
-            console.log(errors);
-        },
-    });
-};
 const listLen = props.projects.length;
 const checkAll = ref(false);
 const showAll = ref(true);
@@ -381,7 +326,7 @@ const selectList = ref([]);
 const updateSelectList = (id, event) => {
     //if groups is select
     if (event.target.checked) {
-        selectList.value.push(id);
+        if (!selectList.value.includes(id)) selectList.value.push(id);
     } else {
         const index = selectList.value.indexOf(id);
         if (index !== -1) {
@@ -400,20 +345,22 @@ const updateSelectList = (id, event) => {
     }
 };
 const deleteProject = () => {
-    console.log(selectList.value)
+    console.log(selectList.value);
     if (confirm("Press OK to delete selected project!") == true) {
         router.delete("/project/delete", {
             data: {
                 projects: selectList.value,
             },
         });
-        selectList.value = []
+        selectList.value = [];
         $('input[id="checkPR"]').prop("checked", false);
         showAll.value = true;
     }
 };
 const GoDetail = (id) => {
-    router.get("/project/detail/" + id);
+    if (!roleUser.value) {
+        router.get("/project/detail/" + id);
+    } else router.get("/project/test/" + id);
 };
 </script>
 <style scoped>

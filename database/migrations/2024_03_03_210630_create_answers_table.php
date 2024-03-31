@@ -13,6 +13,11 @@ return new class extends Migration
     {
         Schema::create('answers', function (Blueprint $table) {
             $table->id();
+            $table->foreignIdFor(\App\Models\Questions::class,'questions_id')->onDelete('cascade');
+            $table->foreignIdFor(\App\Models\User::class,'user_id')->onDelete('cascade');
+            $table->text('answer')->nullable();
+            $table->text('fileName')->nullable();
+            $table->text('filePath')->nullable();
             $table->timestamps();
         });
     }

@@ -405,7 +405,7 @@ const selectList = ref([]);
 const updateSelectList = (id, event) => {
     //if groups is select
     if (event.target.checked) {
-        selectList.value.push(id);
+        if (!selectList.value.includes(id)) selectList.value.push(id);
     } else {
         const index = selectList.value.indexOf(id);
         if (index !== -1) {
@@ -459,7 +459,6 @@ const addUser = () => {
 }
 .text_scroll::-webkit-scrollbar-thumb {
     border-radius: calc(0.5rem - 4px);
-
     background-color: hsl(240 5% 64.9% / 0.3);
 }
 .text_scroll::-webkit-scrollbar-track {
