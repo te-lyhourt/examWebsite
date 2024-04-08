@@ -139,14 +139,49 @@
                                     </div>
 
                                     <div
+                                    class="flex justify-center items-center"
                                         v-if="
                                             currentQuestion.question
                                                 .fileUpload == 'upAudio'
                                         "
                                     >
-                                        <button class="buttonStyle">
-                                            Audio
-                                        </button>
+                                        <div>
+                                            <button
+                                                class="buttonStyle !text-base items-center"
+                                                @click="startRecording"
+                                                v-if="stopButton"
+                                            >
+                                                Start Recording 🔊
+                                            </button>
+                                            <button
+                                                class="text-base bg-red-700 text-white hover:bg-white hover:text-red-700 p-3 rounded-lg items-center"
+                                                @click="stopRecording"
+                                                v-if="!stopButton"
+                                            >
+                                                Stop Recording 🔈
+                                            </button>
+                                        </div>
+
+                                        <li
+                                            v-for="audio in audioList"
+                                            :key="audio"
+                                            style="list-style: none"
+                                            class="pl-[10px]"
+                                        >
+                                            <div class="center">
+                                                <audio
+                                                    :src="audio.url"
+                                                    controls
+                                                ></audio>
+                                                <!-- <button
+                                                    class="save"
+                                                    @click="saveRecord(audio)"
+                                                    :disabled="audio.disabled"
+                                                >
+                                                    {{ audio.saveState }}
+                                                </button> -->
+                                            </div>
+                                        </li>
                                     </div>
                                 </div>
 
@@ -257,14 +292,13 @@ onMounted(() => {
     const len = props.project.questions.length;
 
     for (let i = 0; i < len; i++) {
-
         if (props.project.questions[i].answers[0] != undefined) {
             let propAns = props.project.questions[i].answers[0].answer;
             try {
                 propAns = JSON.parse(propAns);
             } catch {}
             answer.value[i] = propAns;
-            submitedAnswer.value[i] =propAns;
+            submitedAnswer.value[i] = propAns;
         }
     }
 });
@@ -281,36 +315,42 @@ const currentQuestion = ref({
 var checkboxValue = reactive([]);
 var checkboxState = ref([]);
 const changeQuestion = (index) => {
-    //check if answer need upload
-    uploadAnswer();
+    if (index != currentQuestion.value.index) {
+        //check if answer need upload
+        uploadAnswer();
 
-    //move on to next answer
-    currentQuestion.value.index = index;
-    currentQuestion.value.question = props.project.questions[index];
+        //move on to next answer
+        currentQuestion.value.index = index;
+        currentQuestion.value.question = props.project.questions[index];
+        if (props.project.questions[index].answers.length != 0) {
+            currentQuestion.value.fileName =
+                props.project.questions[index].answers[0].fileName;
+        }
 
-    //if json change to json, if not json, it is okay
-    try {
-        currentQuestion.value.question.options = JSON.parse(
-            currentQuestion.value.question.options
-        );
-    } catch {}
+        //if json change to json, if not json, it is okay
+        try {
+            currentQuestion.value.question.options = JSON.parse(
+                currentQuestion.value.question.options
+            );
+        } catch {}
 
-    if (answer.value[index] != undefined) {
-        checkboxState.value = [];
-        checkboxValue = answer.value[index];
-        if (props.project.questions[index].options != null) {
-            const len = props.project.questions[index].options.length;
-            for (let i = 0; i < len; i++) {
-                if (checkboxValue[i] != undefined)
-                    checkboxState.value[i] = true;
+        if (answer.value[index] != undefined) {
+            checkboxState.value = [];
+            checkboxValue = answer.value[index];
+            if (props.project.questions[index].options != null) {
+                const len = props.project.questions[index].options.length;
+                for (let i = 0; i < len; i++) {
+                    if (checkboxValue[i] != undefined)
+                        checkboxState.value[i] = true;
+                }
             }
+            if (submitedAnswer.value[index] != undefined) {
+                currentQuestion.value.submited = true;
+            }
+        } else {
+            checkboxState.value = [];
+            checkboxValue = [];
         }
-        if (submitedAnswer.value[index] != undefined) {
-            currentQuestion.value.submited = true;
-        }
-    } else {
-        checkboxState.value = [];
-        checkboxValue = [];
     }
 };
 
@@ -330,7 +370,7 @@ const disableNext = computed(() => {
         : false;
 });
 const nextQ = () => {
-    var index = parseInt(currentQuestion.value.index) +1;
+    var index = parseInt(currentQuestion.value.index) + 1;
     changeQuestion(index);
 };
 const previousQ = () => {
@@ -341,39 +381,56 @@ const previousQ = () => {
 const uploadAnswer = () => {
     let index = parseInt(currentQuestion.value.index);
     var update = false;
+    const file = fileList[index];
     //reset submited
     currentQuestion.value.submited = false;
+    let updateFile = false;
 
+    //upload new file
+    if (props.project.questions[index].answers.length != 0) {
+        if (
+            props.project.questions[index].answers[0].fileName != null &&
+            currentQuestion.value.fileName !=
+                props.project.questions[index].answers[0].fileName
+        ) {
+            updateFile = true;
+            update = true;
+        }
+    }
     //answer already submit, mark as submit
-    if(submitedAnswer.value[index]!=undefined){
-        currentQuestion.value.submited = true
+    if (submitedAnswer.value[index] != undefined) {
+        currentQuestion.value.submited = true;
     }
 
     //answer change when submit answer and current answer not the same
-    if (submitedAnswer.value[index] != answer.value[index] && submitedAnswer.value[index]!=undefined) {
+    if (
+        submitedAnswer.value[index] != answer.value[index] &&
+        submitedAnswer.value[index] != undefined
+    ) {
         update = true;
     }
 
-    console.log(answer.value[index])
-    console.log(answer.value[index]=="")
-    if(answer.value[index]==""){
-        answer.value[index]= null
-    } 
-
-    const file = fileList[index];
-    console.log(file);
-    if(file!=undefined) answer.value[index]= "";
-    console.log(answer.value[index])
-    console.log(answer.value[index]!=null)
+    if (
+        (answer.value[index] == "") &
+        (currentQuestion.value.fileName == null)
+    ) {
+        answer.value[index] = null;
+    }
 
     //new question
-    if (currentQuestion.value.submited == false && update==false && answer.value[index]!=null) {
-        console.log("new question")
+    if (
+        currentQuestion.value.submited == false &&
+        update == false &&
+        answer.value[index] != null
+    ) {
+        console.log("new question");
         router.post(
             "/answer/add",
             {
+                project_id: props.project.id,
                 questions_id: currentQuestion.value.question.id,
                 user_id: currentQuestion.value.user,
+                user_email: page.props.auth.user.email,
                 fileName: currentQuestion.value.fileName,
                 answer: JSON.stringify(answer.value[index]),
                 file: file,
@@ -389,16 +446,26 @@ const uploadAnswer = () => {
             }
         );
     }
-    if(update==true && answer.value[index]!=null) {
-        console.log("update question")
-        router.patch(
+
+    //update question
+    if (update == true && answer.value[index] != null) {
+        console.log("update question");
+
+        console.log(answer.value[index])
+        router.post(
             "/answer/update/" + props.project.questions[index].answers[0].id,
             {
-                answer: answer.value[index],
+                project_id: props.project.id,
+                questions_id: currentQuestion.value.question.id,
+                user_id: currentQuestion.value.user,
+                user_email: page.props.auth.user.email,
+                answer: JSON.stringify(answer.value[index]),
+                updateFile: updateFile,
+                file: file,
+                oldPath: props.project.questions[index].answers[0].filePath,
             },
             {
                 onSuccess: (res) => {
-                    console.log(res);
                     submitedAnswer.value[index] = answer.value[index];
                 },
                 onError: (errors) => {
@@ -410,7 +477,7 @@ const uploadAnswer = () => {
     }
     //if user delete text and move on with empty answer
     //we set answer to old answer to prevent submited answer to empty
-    if(update==true && answer.value[index]==null) {
+    if (update == true && answer.value[index] == null) {
         let propAns = props.project.questions[index].answers[0].answer;
         try {
             propAns = JSON.parse(propAns);
@@ -427,6 +494,111 @@ const fileChange = (evt) => {
     var files = evt.target.files || evt.dataTransfer.files;
     if (!files.length) return;
     fileList[currentQuestion.value.index] = files[0];
+    answer.value[currentQuestion.value.index] = "";
+    currentQuestion.value.fileName = fileList[currentQuestion.value.index].name;
+};
+//record audio
+
+const audioList = reactive([]);
+
+//webkitURL is deprecated but nevertheless
+URL = window.URL || window.webkitURL;
+var gumStream; //stream from getUserMedia()
+var recorder; //WebAudioRecorder object
+var input; //MediaStreamAudioSourceNode  we'll be recording
+// shim for AudioContext when it's not avb.
+var AudioContext = window.AudioContext || window.webkitAudioContext;
+
+const stopButton = ref(true);
+var encodingType = "wav";
+var encodeAfterRecord = true;
+
+const startRecording = () => {
+    // We'll us a simple constraints object, for more advanced features see https://blog.addpipe.com/audio-constraints-getusermedia/
+    var constraints = {
+        audio: true,
+        video: false,
+    };
+
+    /* We're using the standard promise based getUserMedia() https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia */
+    navigator.mediaDevices
+        .getUserMedia(constraints)
+        .then(function (stream) {
+            //assign to gumStream for later use
+            gumStream = stream;
+            // when to encode
+            var audioContext = new AudioContext();
+            /* use the stream */
+            input = audioContext.createMediaStreamSource(stream);
+
+            //stop the input from playing back through the speakers
+            //input.connect(audioContext.destination)
+
+            recorder = new WebAudioRecorder(input, {
+                encoding: encodingType,
+                numChannels: 2,
+                onEncoderLoading: async function (recorder, encoding) {},
+                onEncoderLoaded: async function (recorder, encoding) {},
+            });
+
+            recorder.onComplete = function (recorder, blob) {
+                createDownloadLink(blob, recorder.encoding);
+            };
+            recorder.setOptions({
+                timeLimit: 120,
+                encodeAfterRecord: encodeAfterRecord,
+                ogg: {
+                    quality: 0.5,
+                },
+                mp3: {
+                    bitRate: 160,
+                },
+            });
+            //start the recording process
+            recorder.startRecording();
+        })
+        .catch(function (err) {
+            //enable the record button if getUSerMedia() fails
+            stopButton.value = true;
+        });
+
+    //disable the record button
+    stopButton.value = false;
+};
+
+const stopRecording = () => {
+    //stop microphone access
+    gumStream.getAudioTracks()[0].stop();
+
+    //disable the stop button
+    stopButton.value = true;
+
+    //tell the recorder to finish the recording (stop recording + encode the recorded audio)
+    recorder.finishRecording();
+};
+
+const createDownloadLink = (blob, encoding) => {
+    var url = URL.createObjectURL(blob);
+    var audioName =
+        // neptun.value +
+        // "_" +
+        // textToRead.value +
+        // "_" +
+        (new Date().valueOf() + ".").replace(/\s/g, "") + encoding;
+    audioList[0] = {
+        // text: textToRead.value,
+        url: url,
+        audioName: audioName,
+        blob: blob,
+        saveState: "save",
+        disabled: false,
+        // audioTextNumber: currentText,
+    };
+    //add file to answer list
+
+    //blob is pretty much file without this 2 property: name and lastModified
+    var file = new File([blob], audioName, {lastModified: new Date()})
+    fileList[currentQuestion.value.index] = file;
     answer.value[currentQuestion.value.index] = "";
     currentQuestion.value.fileName = fileList[currentQuestion.value.index].name;
 };

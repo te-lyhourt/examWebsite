@@ -54,6 +54,12 @@
                         >
                             View Questions as User
                         </button>
+                        <button
+                            class="buttonStyle flex items-center mx-2"
+                            @click="exportAnswer(project.id,$event)"
+                        >
+                        📥 Export Answer
+                        </button>
                         <Dialog>
                             <DialogTrigger as-child>
                                 <Button variant="outline" class="buttonStyle">
@@ -92,7 +98,6 @@
                                                     v-model="
                                                         questionForm.description
                                                     "
-                                                    autofocus
                                                 />
                                             </div>
                                             <div
@@ -558,7 +563,6 @@
                                                     class="mt-1 block w-full"
                                                     v-model="form.group"
                                                     required
-                                                    autofocus
                                                 />
                                                 <InputError
                                                     class="mt-2"
@@ -816,7 +820,7 @@ import { Button } from "@/components/ui/button";
 import { Head, useForm, usePage, router } from "@inertiajs/vue3";
 import { computed, ref, onMounted, reactive } from "vue";
 import { Textarea } from "@/components/ui/textarea";
-
+import axios from "axios";
 import { CardContent } from "@/components/ui/card";
 import {
     Table,
@@ -1083,10 +1087,9 @@ const removeAdmin = () => {
     if (
         confirm("Press OK to remove selected admin from the project!") == true
     ) {
-        var select = selectList.value
-        var admin = JSON.parse(props.project.admin)
-        admin = admin.filter(item => !select.includes(item));
-        console.log(admin)
+        var select = selectList.value;
+        var admin = JSON.parse(props.project.admin);
+        admin = admin.filter((item) => !select.includes(item));
         router.delete("/project/removeAdmin/" + props.project.id, {
             data: {
                 admins: admin,
@@ -1096,6 +1099,39 @@ const removeAdmin = () => {
         $('input[id="checkPR"]').prop("checked", false);
         showAll.value = true;
     }
+};
+
+const exportAnswer = (id,evt) => {
+    evt.target.disabled = true;
+    evt.target.innerText = 'Downloading...';
+    axios
+        .get("/answer/export/" + id, { responseType: "blob" })
+        .catch(function (error) {
+            console.log(error);
+        })
+        .then((response) => {
+            const blob = new Blob([response.data], { type: "application/zip" });
+            // Create a URL for the Blob
+            const url = window.URL.createObjectURL(blob);
+
+            // Create a link element
+            const link = document.createElement("a");
+            link.href = url;
+
+            // Set the filename for the downloaded file
+            link.setAttribute("download", "download.zip");
+
+            // Append the link to the document body and trigger the download
+            document.body.appendChild(link);
+            link.click();
+
+            // Cleanup
+            window.URL.revokeObjectURL(url);
+
+            evt.target.disabled = false;
+
+            evt.target.innerText ="📥 Export Answer";
+        });
 };
 </script>
 <style scoped>

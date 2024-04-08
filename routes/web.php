@@ -41,7 +41,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/project/delete',[ProjectController::class,'delete'])->name('project.delete');
     Route::delete('/project/removeGroup/{id}',[ProjectController::class,'removeGroup'])->name('project.removeGroup');
     Route::get('/project/test/{id}',[ProjectController::class,'testPage'])->name('page.test');
-    Route::delete('/project/removeAdmin/{id}',[ProjectController::class,'removeAdmin'])->name('project.removeAdmin');
+    Route::delete('/project/removeAdmin/{id}',[ProjectController::class,'removeAdmin'])->name('project.removeAdmin
+    ');
 
     //group 
     Route::get('/group',[GroupController::class,'index'])->name('page.group');
@@ -58,7 +59,8 @@ Route::middleware('auth')->group(function () {
 
     //answer
     Route::post('/answer/add',[answerController::class,'store'])->name('answer.add');
-    Route::patch('/answer/update/{id}', [answerController::class, 'update'])->name('answer.update');
+    Route::post('/answer/update/{id}', [answerController::class, 'update'])->name('answer.update');
+    Route::get('/answer/export/{id}', [answerController::class, 'export'])->name('answer.export');
 
     // Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     

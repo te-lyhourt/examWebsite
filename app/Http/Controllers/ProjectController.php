@@ -28,7 +28,7 @@ class ProjectController extends Controller
         if ($userRole == 'project admin') {
             //only list project where user is the admin of that project or project created by user
 
-            $projects = Projects::whereJsonContains('admin', $user->id)->orWhere('created_by', $user->id)->orderBy('created_at', 'desc')->get();
+            $projects = Projects::whereJsonContains('admin', $user->email)->orWhere('created_by', $user->id)->orderBy('created_at', 'desc')->get();
             return Inertia('Project/ProjectPage', [
                 'projects' => $projects
             ]);

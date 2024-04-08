@@ -60,18 +60,18 @@ class DatabaseSeeder extends Seeder
         //create 3 project
         \App\Models\Projects::create([
             'name' => 'Math exam',
-            'created_by' => 3,
-            'admin' => json_encode(["S98PBH@pte.hu","project@pte.hu"])
+            'created_by' => 1,
+            'admin' => json_encode(["S98PBH@pte.hu"])
         ]);
         \App\Models\Projects::create([
             'name' => 'C++ exam',
             'created_by' => 1,
-            'admin' => json_encode("project@pte.hu")
+            'admin' => json_encode(["project@pte.hu"])
         ]);
 
         \App\Models\Projects::create([
             'name' => 'Math exam 2',
-            'created_by' => 2,
+            'created_by' => 3,
             'admin' => json_encode(["S98PBH@pte.hu","project@pte.hu"])
         ]);
 
