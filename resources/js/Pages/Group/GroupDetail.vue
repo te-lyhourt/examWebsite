@@ -425,18 +425,19 @@ const updateSelectList = (id, event) => {
 };
 
 const removeUser = () => {
-    if (confirm("Press OK to remove selected user from the group!") == true) {
-        router.delete(
-            "/group/removeUser/" + props.group.id,
-            {
+    if (selectList.value.length != 0) {
+        if (
+            confirm("Press OK to remove selected user from the group!") == true
+        ) {
+            router.delete("/group/removeUser/" + props.group.id, {
                 data: {
                     users: selectList.value,
                 },
-            }
-        );
-        selectList.value = []
-        $('input[id="checkPR"]').prop("checked", false);
-        showAll.value = true
+            });
+            selectList.value = [];
+            $('input[id="checkPR"]').prop("checked", false);
+            showAll.value = true;
+        }
     }
 };
 

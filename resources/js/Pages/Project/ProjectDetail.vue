@@ -48,18 +48,6 @@
                     </Button>
 
                     <div class="flex justify-end mr-4" v-if="!roleUser">
-                        <button
-                            class="buttonStyle flex items-center mx-2"
-                            @click="goTest(project.id)"
-                        >
-                            View Questions as User
-                        </button>
-                        <button
-                            class="buttonStyle flex items-center mx-2"
-                            @click="exportAnswer(project.id,$event)"
-                        >
-                        📥 Export Answer
-                        </button>
                         <Dialog>
                             <DialogTrigger as-child>
                                 <Button variant="outline" class="buttonStyle">
@@ -99,6 +87,10 @@
                                                         questionForm.description
                                                     "
                                                 />
+                                                <h6 class="text-gray-500">
+                                                    You can add multiple
+                                                    questions separated by line.
+                                                </h6>
                                             </div>
                                             <div
                                                 class="flex flex-col space-y-1.5"
@@ -429,6 +421,20 @@
                                 </CardContent>
                             </DialogContent>
                         </Dialog>
+                        <button
+                            class="buttonStyle flex items-center mx-2"
+                            @click="goTest(project.id)"
+                            v-if="project.questions.length!=0"
+                        >
+                            View Questions as User
+                        </button>
+                        <button
+                            v-if="project.url"
+                            class="buttonStyle flex items-center mx-2"
+                            @click="goDrive(project.url, $event)"
+                        >
+                            📁 View project storage
+                        </button>
                     </div>
                 </div>
 
@@ -458,9 +464,6 @@
                                         </button>
                                     </div>
                                 </TableHead>
-                                <TableHead class="w-[100px] px-5">
-                                    Question ID
-                                </TableHead>
                                 <TableHead>Question Description</TableHead>
                                 <TableHead class="text-center">
                                     Type
@@ -484,9 +487,6 @@
                                             )
                                         "
                                     />
-                                </TableCell>
-                                <TableCell class="text-center">
-                                    {{ question.id }}
                                 </TableCell>
                                 <TableCell>{{
                                     question.description
@@ -560,7 +560,7 @@
                                                     ></span
                                                 >
                                                 <input
-                                                    class="mt-1 block w-full"
+                                                    class="mt-1 block w-full inputStyle"
                                                     v-model="form.group"
                                                     required
                                                 />
@@ -575,14 +575,14 @@
                                                 class="sm:justify-start"
                                             >
                                                 <DialogClose as-child>
-                                                    <button
+                                                    <Button
                                                         id="closeBtn"
                                                         type="button"
                                                         variant="secondary"
                                                         class="ml-6 bg-gray-800 dark:bg-gray-200 text-xs text-white dark:text-gray-800 hover:bg-gray-700 dark:hover:bg-white hover:text-white dark:hover:text-gray-800"
                                                     >
                                                         Close
-                                                    </button>
+                                                    </Button>
                                                 </DialogClose>
                                                 <Button
                                                     type="submit"
@@ -593,7 +593,7 @@
                                                     variant="secondary"
                                                     class="ml-6 bg-gray-800 dark:bg-gray-200 text-xs text-white dark:text-gray-800 hover:bg-gray-700 dark:hover:bg-white hover:text-white dark:hover:text-gray-800"
                                                 >
-                                                    ADD USER
+                                                    ADD GROUP
                                                 </Button>
                                             </DialogFooter>
                                         </div>
@@ -630,10 +630,8 @@
                                         </button>
                                     </div>
                                 </TableHead>
-                                <TableHead class="w-[100px] px-5">
-                                    Group ID
-                                </TableHead>
-                                <TableHead>Grop name</TableHead>
+                                <TableHead>Group ID</TableHead>
+                                <TableHead>Group name</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -651,10 +649,17 @@
                                         "
                                     />
                                 </TableCell>
-                                <TableCell class="text-center">
-                                    {{ group.id }}
-                                </TableCell>
+                                <TableCell>{{ group.id }}</TableCell>
                                 <TableCell>{{ group.name }}</TableCell>
+                                <TableCell>
+                                    <Button
+                                        @click="goGrop(group.id,props.project.id)"
+                                        type="button"
+                                        class="ml-6 bg-gray-800 dark:bg-gray-200 text-xs text-white dark:text-gray-800 hover:bg-gray-700 dark:hover:bg-white hover:text-white dark:hover:text-gray-800"
+                                    >
+                                        Detail
+                                    </Button>
+                                </TableCell>
                             </TableRow>
                         </TableBody>
                     </Table>
@@ -938,17 +943,20 @@ const updateSelectList = (id, evt) => {
 };
 
 const removeGroup = () => {
-    if (
-        confirm("Press OK to remove selected group from the project!") == true
-    ) {
-        router.delete("/project/removeGroup/" + props.project.id, {
-            data: {
-                groups: selectList.value,
-            },
-        });
-        selectList.value = [];
-        $('input[id="checkPR"]').prop("checked", false);
-        showAll.value = true;
+    if (selectList.value.length != 0) {
+        if (
+            confirm("Press OK to remove selected group from the project!") ==
+            true
+        ) {
+            router.delete("/project/removeGroup/" + props.project.id, {
+                data: {
+                    groups: selectList.value,
+                },
+            });
+            selectList.value = [];
+            $('input[id="checkPR"]').prop("checked", false);
+            showAll.value = true;
+        }
     }
 };
 
@@ -992,9 +1000,29 @@ const questionForm = useForm({
     options: [],
     fileUpload: "none",
     projects_id: props.project.id,
+    repeatNum: props.project.repeatNum,
 });
 
 const addQuestion = () => {
+    if (questionForm.type == "default") {
+        let question = questionForm.description.split("\n");
+        question = question.filter((user) => user.trim() !== "");
+        if (question.length > 1) {
+            try {
+                question = [...JSON.parse(props.project.admin), ...users];
+                question = [...new Set(question)];
+            } catch {}
+            questionForm.description = question;
+        }
+    }
+    let options = [];
+    questionForm.options.forEach((option) => {
+        if (option != "" || option != undefined) {
+            options.push(option);
+        }
+    });
+    questionForm.options = options.filter((element) => element !== "");
+
     questionForm.post(route("question.add"), {
         onSuccess: () => {
             questionForm.reset();
@@ -1012,14 +1040,8 @@ const questionFilled = computed(() => {
         if (questionForm.type != "default") {
             //check if options length is 2 or more
             if (questionForm.options.length >= 2) {
-                //check if not fill
-                if (
-                    questionForm.options[0].length == 0 ||
-                    questionForm.options[1].length == 0
-                )
-                    return true;
                 //if fill
-                else return false;
+                return false;
             }
             //option length smaller than 2, button disable
             else return true;
@@ -1032,18 +1054,20 @@ const questionFilled = computed(() => {
 });
 
 const removeQuestion = () => {
-    if (confirm("Press OK to delete selected Question!") == true) {
-        router.delete("/question/delete", {
-            data: {
-                questions: selectList.value,
-            },
-        });
-        //uncheck all checkbox
-        selectList.value = [];
-        showAll.value = true;
-        checkAll.value = false;
-        $('input[id="checkPR"]').prop("checked", false);
-        $('input[id="checkChile"]').prop("checked", false);
+    if (selectList.value.length != 0) {
+        if (confirm("Press OK to delete selected Question!") == true) {
+            router.delete("/question/delete", {
+                data: {
+                    questions: selectList.value,
+                },
+            });
+            //uncheck all checkbox
+            selectList.value = [];
+            showAll.value = true;
+            checkAll.value = false;
+            $('input[id="checkPR"]').prop("checked", false);
+            $('input[id="checkChile"]').prop("checked", false);
+        }
     }
 };
 
@@ -1063,9 +1087,11 @@ const adminFilled = computed(() => {
 });
 const addAdmin = (id) => {
     let users = adminForm.email.split("\n");
-    users = users.filter((user) => user.trim() !== "");
-    users = [...JSON.parse(props.project.admin), ...users];
-    users = [...new Set(users)];
+    users = users.map((user) => user.trim()).filter((user) => user !== "");
+    try {
+        users = [...JSON.parse(props.project.admin), ...users];
+        users = [...new Set(users)];
+    } catch {}
 
     router.post(
         "/project/admin/" + id,
@@ -1084,54 +1110,88 @@ const addAdmin = (id) => {
     );
 };
 const removeAdmin = () => {
-    if (
-        confirm("Press OK to remove selected admin from the project!") == true
-    ) {
-        var select = selectList.value;
-        var admin = JSON.parse(props.project.admin);
-        admin = admin.filter((item) => !select.includes(item));
-        router.delete("/project/removeAdmin/" + props.project.id, {
-            data: {
-                admins: admin,
-            },
-        });
-        selectList.value = [];
-        $('input[id="checkPR"]').prop("checked", false);
-        showAll.value = true;
+    if (selectList.value.length != 0) {
+        if (
+            confirm("Press OK to remove selected admin from the project!") ==
+            true
+        ) {
+            var select = selectList.value;
+            var admin = JSON.parse(props.project.admin);
+            admin = admin.filter((item) => !select.includes(item));
+            router.delete("/project/removeAdmin/" + props.project.id, {
+                data: {
+                    admins: admin,
+                },
+            });
+            selectList.value = [];
+            $('input[id="checkPR"]').prop("checked", false);
+            showAll.value = true;
+        }
     }
 };
-
-const exportAnswer = (id,evt) => {
+const goDrive = (url, evt) => {
     evt.target.disabled = true;
-    evt.target.innerText = 'Downloading...';
-    axios
-        .get("/answer/export/" + id, { responseType: "blob" })
-        .catch(function (error) {
-            console.log(error);
-        })
-        .then((response) => {
-            const blob = new Blob([response.data], { type: "application/zip" });
-            // Create a URL for the Blob
-            const url = window.URL.createObjectURL(blob);
+    evt.target.innerText = "Redirecting...";
+    window.location.href = url;
+};
+const goGrop = (group_id,project_id)=>{
+    let url = "/group/progress/" + group_id+"/"+project_id;
+    router.get(url);
+};
+    
 
-            // Create a link element
-            const link = document.createElement("a");
-            link.href = url;
+const exportAnswer = (id, evt) => {
+    evt.target.disabled = true;
+    evt.target.innerText = "Downloading...";
+    router.get("/answer/export/" + id, {
+        onSuccess: (res) => {
+            // // Create a link element
+            // const link = document.createElement("a");
+            // link.href = res.data;
+            // // Set the filename for the downloaded file
+            // link.setAttribute("download", "download.zip");
+            // // Append the link to the document body and trigger the download
+            // document.body.appendChild(link);
+            // link.click();
+            // // Cleanup
+            // window.URL.revokeObjectURL(url);
+            // evt.target.disabled = false;
+            // evt.target.innerText ="📥 Export Answer";
+        },
 
-            // Set the filename for the downloaded file
-            link.setAttribute("download", "download.zip");
+        onError: (err) => {
+            console.log(err);
+        },
+    });
+    // axios
+    //     .get("/answer/export/" + id, { responseType: "blob" })
+    //     .catch(function (error) {
+    //         console.log(error.toJSON());
+    //     })
+    //     .then((response) => {
+    //         console.log(response)
+    //         const blob = new Blob([response.data], { type: "application/zip" });
+    //         // Create a URL for the Blob
+    //         const url = window.URL.createObjectURL(blob);
 
-            // Append the link to the document body and trigger the download
-            document.body.appendChild(link);
-            link.click();
+    //         // Create a link element
+    //         const link = document.createElement("a");
+    //         link.href = url;
 
-            // Cleanup
-            window.URL.revokeObjectURL(url);
+    //         // Set the filename for the downloaded file
+    //         link.setAttribute("download", "download.zip");
 
-            evt.target.disabled = false;
+    //         // Append the link to the document body and trigger the download
+    //         document.body.appendChild(link);
+    //         link.click();
 
-            evt.target.innerText ="📥 Export Answer";
-        });
+    //         // Cleanup
+    //         window.URL.revokeObjectURL(url);
+
+    //         evt.target.disabled = false;
+
+    //         evt.target.innerText ="📥 Export Answer";
+    //     });
 };
 </script>
 <style scoped>

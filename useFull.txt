@@ -17,3 +17,33 @@ https://www.youtube.com/watch?v=abyoZC6dLCc
 
 -vue libaray to do the login
 https://devbaji.github.io/vue3-google-login/#googletokenlogin-function
+
+
+- get auth code and refresh token
+https://linuxamination.blogspot.com/2022/09/google-api-generate-access-token-and.html
+
+
++ step on get auth code:
+
+https://accounts.google.com/o/oauth2/v2/auth?
+redirect_uri=http://localhost
+&prompt=consent
+&response_type=code
+&client_id=XXXXXX
+&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fdrive+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fdrive.appdata+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fdrive.apps.readonly+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fdrive.file+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fdrive.metadata+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fdrive.metadata.readonly+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fdrive.photos.readonly+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fdrive.readonly+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fdrive.scripts
+&access_type=offline
+
++get refresh token:
+curl --request POST --data "
+code=XXXXXX
+&client_id=XXXXXX
+&client_secret=XXXXXX
+&redirect_uri=http://localhost
+&grant_type=authorization_code" 
+https://oauth2.googleapis.com/token
+
+
+Note : 
+- Refresh Tokens expire in 1 week if your app is not set as production. 
+Change publishing status of your app from testing to production to use your refresh token always.
+- If parent folder is share folder, child folder is also share folder.

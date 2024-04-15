@@ -21,5 +21,7 @@ class Answers extends Model
         'answer',
         'fileName',
         'filePath',
+        'url',
+        'repeatIndex',
     ];
 }

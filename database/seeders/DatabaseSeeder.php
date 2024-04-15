@@ -61,18 +61,26 @@ class DatabaseSeeder extends Seeder
         \App\Models\Projects::create([
             'name' => 'Math exam',
             'created_by' => 1,
-            'admin' => json_encode(["S98PBH@pte.hu"])
+            'admin' => json_encode(["S98PBH@pte.hu"]),
+            'repeatNum'=>1,
+            'url'=>'https://drive.google.com/drive/folders/1X7BQM42bOX88z-lrNwsf4UJhMcnNSnlO?usp=drive_link'
         ]);
         \App\Models\Projects::create([
             'name' => 'C++ exam',
             'created_by' => 1,
-            'admin' => json_encode(["project@pte.hu"])
+            'admin' => json_encode(["project@pte.hu"]),
+            'questNum'=>500,
+            'repeatNum'=>5,
+            'url'=>'https://drive.google.com/drive/folders/1eEFLX9LVrTiVvdhGXlCko68d2BabANdN?usp=drive_link'
         ]);
 
         \App\Models\Projects::create([
             'name' => 'Math exam 2',
             'created_by' => 3,
-            'admin' => json_encode(["S98PBH@pte.hu","project@pte.hu"])
+            'admin' => json_encode(["S98PBH@pte.hu","project@pte.hu"]),
+            'questNum'=>500,
+            'repeatNum'=>1,
+            'url'=>'https://drive.google.com/drive/folders/1bUkFFf6T96nVEWz1JGHSCcXm-WBIBHpE?usp=drive_link'
         ]);
 
         //add 3 user into group 1, user4 into group 2 3

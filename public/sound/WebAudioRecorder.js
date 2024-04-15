@@ -146,7 +146,6 @@
             else parts.pop();
 
             const modifiedUrl = parts.join('/');
-            console.log(modifiedUrl + "/" + o[this.encoding])
             function worker_function() {
                 (function (t) {
                     var s = Math.min
@@ -312,7 +311,6 @@
                 worker_function();
             try {
                 this.worker = new Worker(URL.createObjectURL(new Blob(["(" + worker_function.toString() + ")()"], { type: 'text/javascript' })));
-                console.log(this.worker);
             } catch (error) {
                 console.log(error)
             }
@@ -346,8 +344,6 @@
                 },
                 options: this.options
             })
-
-            console.log(this.worker);
         },
         error: function (e) {
             this.onError(this, "WebAudioRecorder.min.js:" + e)

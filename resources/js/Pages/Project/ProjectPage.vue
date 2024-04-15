@@ -19,7 +19,6 @@
                     Delete Project
                 </Button>
                 <div class="flex justify-end mr-4">
-
                     <Dialog v-if="!roleUser">
                         <DialogTrigger as-child>
                             <Button variant="outline" class="buttonStyle">
@@ -27,7 +26,7 @@
                             </Button>
                         </DialogTrigger>
                         <DialogContent
-                            class="sm:max-w-md bg-white dark:bg-gray-800 text-xs dark:text-white text-gray-800"
+                            class="max-w-[650px] bg-white dark:bg-gray-800 text-xs dark:text-white text-gray-800"
                         >
                             <DialogHeader class="p-6 pt-0">
                                 <DialogTitle
@@ -50,7 +49,7 @@
                                                 class="mt-1 block w-full"
                                                 v-model="form.name"
                                                 required
-                                                autofocus
+
                                             />
                                             <InputError
                                                 class="mt-2"
@@ -76,9 +75,41 @@
                                         <div class="flex flex-col space-y-1.5">
                                             <span
                                                 class="block font-medium text-sm text-gray-800 dark:text-white"
+                                                >Number of Reapeat for each
+                                                question
+                                            </span>
+                                            <h6 class="text-gray-500">
+                                                By default each question appear
+                                                1 time. if set to 2, when
+                                                create a question, the same
+                                                question will create 2 times.
+                                            </h6>
+                                            <TextInput
+                                                type="number"
+                                                min="1"
+                                                max="10"
+                                                class="mt-1 block w-full"
+                                                v-model="form.repeatNum"
+                                            />
+                                            <InputError
+                                                class="mt-2"
+                                                :message="form.errors.repeatNum"
+                                            />
+                                        </div>
+                                        <div class="flex flex-col space-y-1.5">
+                                            <span
+                                                class="block font-medium text-sm text-gray-800 dark:text-white"
                                                 >Number of question for each
                                                 student
                                             </span>
+                                            <h6 class="text-gray-500">
+                                                By default each student get all
+                                                the questions in project. if
+                                                question number set to 3, each
+                                                student will get an offset of 3
+                                                questions from the
+                                                questions list.
+                                            </h6>
                                             <TextInput
                                                 type="number"
                                                 min="1"
@@ -89,35 +120,16 @@
                                                 class="mt-2"
                                                 :message="form.errors.questNum"
                                             />
-                                            <h6 class="text-gray-500">
-                                                By default each student get all
-                                                the questions in project.
-                                            </h6>
                                         </div>
-                                        <div class="flex flex-col space-y-1.5">
-                                            <span
-                                                class="block font-medium text-sm text-gray-800 dark:text-white"
-                                                >Number of Reapeat for each
-                                                question
-                                                <span style="color: red"
-                                                    >*</span
-                                                ></span
-                                            >
-                                            <TextInput
-                                                type="number"
-                                                min="1"
-                                                class="mt-1 block w-full"
-                                                v-model="form.repeatNum"
-                                            />
-                                            <InputError
-                                                class="mt-2"
-                                                :message="form.errors.repeatNum"
-                                            />
-                                            <h6 class="text-gray-500">
-                                                By default each question appear
-                                                one time.
-                                            </h6>
-                                        </div>
+                                    </div>
+                                    <div class="mt-10">
+                                        <h6 class="text-gray-500">
+                                            For example: if repeat question set
+                                            to 2, A student will get: question
+                                            1 x 2 times, question 2 x 1 times.
+                                            another student may get: question
+                                            2 x 1 times, question 3 x 2 times.
+                                        </h6>
                                     </div>
                                     <div class="flex justify-end mt-6">
                                         <DialogFooter class="sm:justify-start">
@@ -179,16 +191,17 @@
                                     </button>
                                 </div>
                             </TableHead>
-                            <TableHead class="w-[100px] px-5">
-                                PROJECT ID
-                            </TableHead>
                             <TableHead>PROJECT Name</TableHead>
+                            <TableHead class="text-center">
+                                Num Question
+                            </TableHead>
+                            <TableHead class="text-center">
+                                Num Repeat
+                            </TableHead>
                             <TableHead class="text-center">
                                 Created At
                             </TableHead>
-                            <TableHead class="text-center" v-if="!roleUser">
-                                Project Admin
-                            </TableHead>
+                            
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -204,10 +217,9 @@
                                     "
                                 />
                             </TableCell>
-                            <TableCell class="font-medium text-center">
-                                {{ project.id }}
-                            </TableCell>
-                            <TableCell>{{ project.name }}</TableCell>
+                            <TableCell >{{ project.name }}</TableCell>
+                            <TableCell class="text-center">{{ project.questNum }}</TableCell>
+                            <TableCell class="text-center">{{ project.repeatNum }}</TableCell>
                             <TableCell class="text-center">
                                 {{
                                     moment(project.created_at).format(
@@ -272,7 +284,7 @@ const form = useForm({
     name: "",
     description: "",
     questNum: "",
-    repeatNum: "",
+    repeatNum: 1,
     created_by: parseInt(page.props.auth.user.id),
 });
 
@@ -345,17 +357,19 @@ const updateSelectList = (id, event) => {
     }
 };
 const deleteProject = () => {
-    console.log(selectList.value);
-    if (confirm("Press OK to delete selected project!") == true) {
-        router.delete("/project/delete", {
-            data: {
-                projects: selectList.value,
-            },
-        });
-        selectList.value = [];
-        $('input[id="checkPR"]').prop("checked", false);
-        showAll.value = true;
+    if(selectList.value.length!=0){
+        if (confirm("Press OK to delete selected project!") == true) {
+            router.delete("/project/delete", {
+                data: {
+                    projects: selectList.value,
+                },
+            });
+            selectList.value = [];
+            $('input[id="checkPR"]').prop("checked", false);
+            showAll.value = true;
+        }
     }
+    
 };
 const GoDetail = (id) => {
     if (!roleUser.value) {

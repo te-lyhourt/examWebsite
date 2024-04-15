@@ -27,9 +27,9 @@ class User extends Authenticatable
     // public function question() : HasMany{
     //     return $this->hasMany(Question::class);
     // }
-    // public function answer() : HasMany{
-    //     return $this->hasMany(Answer::class);
-    // }
+    public function answers() {
+        return $this->hasMany(Answers::class);
+    }
 
     /**
      * The attributes that are mass assignable.

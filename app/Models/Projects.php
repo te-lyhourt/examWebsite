@@ -35,6 +35,7 @@ class Projects extends Model
         'repeatNum',
         'created_by',
         'admin',
+        'url',
     ];
 
 }

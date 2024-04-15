@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 
 const props = defineProps({
   defaultValue: { type: [String, Number], required: false },
-  modelValue: { type: [String, Number], required: false },
+  modelValue: { required: false },
   class: { type: null, required: false },
 });
 

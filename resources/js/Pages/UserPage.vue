@@ -349,15 +349,17 @@ const updateSelectList = (id, event) => {
 };
 
 const deleteUser = () => {
-    if (confirm("Press OK to delete selected user!") == true) {
-        router.delete("/user/delete", {
-            data: {
-                users: selectList.value,
-            },
-        });
-        selectList.value = []
-        $('input[id="checkPR"]').prop("checked", false);
-        showAll.value = true;
+    if (selectList.value.length != 0) {
+        if (confirm("Press OK to delete selected user!") == true) {
+            router.delete("/user/delete", {
+                data: {
+                    users: selectList.value,
+                },
+            });
+            selectList.value = [];
+            $('input[id="checkPR"]').prop("checked", false);
+            showAll.value = true;
+        }
     }
 };
 </script>

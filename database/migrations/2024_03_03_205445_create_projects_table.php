@@ -19,6 +19,7 @@ return new class extends Migration
             $table->integer('repeatNum')->nullable();
             $table->foreignIdFor(\App\Models\User::class,'created_by');
             $table-> json('admin')->nullable();
+            $table->text('url')->nullable();
             $table->timestamps();
         });
     }

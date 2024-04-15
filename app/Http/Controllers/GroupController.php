@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Groups;
+use App\Models\Projects;
 use App\Models\User;
+use Google\Service\CloudResourceManager\Project;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
@@ -138,5 +140,40 @@ class GroupController extends Controller
             'groups.*' => 'required|integer|exists:groups,id'
         ]);
         Groups::whereIn('id', $validator['groups'])->delete();
+    }
+    //progress
+    public function progress(Request $request, $group_id, $project_id)
+    {
+        $project = Projects::findOrFail($project_id);
+        $totalQuestions = $project->questions()->count() * $project->repeatNum;
+        $group = Groups::findOrFail($group_id);
+        $group->totalQuestions = $totalQuestions;
+        $group->projectName = $project->name;
+        $group->project_id = $project_id;
+        // Get all question IDs associated with the project
+        $questionIds = $project->questions()->pluck('id');
+
+        // Load users with their answers for the specified questions
+        $users = $group->users->map(function ($user) use ($questionIds) {
+            // Count the number of answers for the specified questions for each user
+            $user->answersCount = $user->answers()->whereIn('questions_id', $questionIds)->count();
+            return $user;
+        });
+
+        return Inertia('Project/userProgress', [
+            'group' => $group,
+            'users' => $users
+        ]);
+    }
+    public function progressDetail(Request $request, $user_id, $project_id){
+        $project = Projects::findOrFail($project_id);
+        $project = $project->load(['questions.answers' => function ($query) use ($user_id){
+            $query->where('user_id', $user_id);
+        }]);
+        $user = User::findOrFail($user_id);
+        $project->user = $user;
+        return Inertia('Project/userProgressDetail', [
+            'project' => $project,
+        ]);
     }
 }

@@ -18,6 +18,8 @@ return new class extends Migration
             $table->text('answer')->nullable();
             $table->text('fileName')->nullable();
             $table->text('filePath')->nullable();
+            $table->text('url')->nullable();
+            $table->integer('repeatIndex')->nullable();
             $table->timestamps();
         });
     }

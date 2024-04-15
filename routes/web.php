@@ -62,6 +62,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/answer/update/{id}', [answerController::class, 'update'])->name('answer.update');
     Route::get('/answer/export/{id}', [answerController::class, 'export'])->name('answer.export');
 
+    //progress
+    Route::get('/group/progress/{group_id}/{project_id}',[GroupController::class,'progress'])->name('page.progress');
+    Route::get('/group/progress_detail/{user_id}/{project_id}',[GroupController::class,'progressDetail'])->name('page.progress_detail');
     // Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     
     // Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');

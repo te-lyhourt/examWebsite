@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
 use SebastianBergmann\CodeCoverage\Report\Xml\Project;
+use Illuminate\Support\Facades\Storage;
 
 class ProjectController extends Controller
 {
@@ -59,19 +60,27 @@ class ProjectController extends Controller
         // Validation rules
         $validator = $request->validate([
             'name' => 'required|string|unique:projects,name',
-            'questNum'=>'integer',
-            'repeatNum'=>'integer',
+            'questNum' => 'integer',
+            'repeatNum' => 'integer',
             'created_by' => 'required|exists:users,id',
+            'url'
         ]);
         //create group
-        Projects::create([
+        $project = Projects::create([
             'name' => $validator['name'],
-            'description'=>$request->description,
-            'questNum'=>$validator['questNum'],
-            'repeatNum'=>$validator['repeatNum'],
+            'description' => $request->description,
+            'questNum' => $validator['questNum'],
+            'repeatNum' => $validator['repeatNum'],
             'created_by' => $validator['created_by'],
         ]);
+
+        Storage::disk('google')->makeDirectory((string)$project->id);
+        $url = Storage::disk('google')->url((string)$project->id);
+        $project->url = $url;
+
+        $project->save();
     }
+
     //project detial page
     public function projectDetail(Request $request)
     {
@@ -81,8 +90,12 @@ class ProjectController extends Controller
             'id' => 'required|integer|exists:projects,id'
         ]);
         $project = Projects::findOrFail($validator['id']);
+        $project = $project->load(['questions' => function ($query) {
+            $query->orderBy('created_at', 'desc');
+        }, 'groups']);
+
         return Inertia('Project/ProjectDetail', [
-            'project' => $project->load('groups','questions'),
+            'project' => $project
         ]);
     }
 
@@ -106,6 +119,8 @@ class ProjectController extends Controller
         // Detach users from the group
         $project->groups()->detach($request->groups);
     }
+
+    //delete project
     public function delete(Request $request)
     {
         $validator = $request->validate([
@@ -125,8 +140,8 @@ class ProjectController extends Controller
             //custome error messsage
             [
                 'users.*.required' => 'Error: email is required.',
-                'users.*.email' => 'Error: The :input must be a valid email address.',
-                'users.*.exists' => 'Error: The :input does not exist.',
+                'users.*.email' => 'Error: :input must be a valid email address.',
+                'users.*.exists' => 'Error: :input does not exist.',
             ]
         );
         $project = Projects::find($id);
@@ -162,12 +177,93 @@ class ProjectController extends Controller
         ]);
         $project = Projects::findOrFail($validator['id']);
 
-        $project = $project->load(['questions.answers' => function ($query) {
+        $answersCount = 0;
+
+        //if admin limit number of question
+        if ($project->questNum != null) {
+            $numQuestions = $project->questNum;
             $user = Auth::user();
-            $query->where('user_id', $user->id);
-        }]);
+
+            $totalQuestions = $project->questions()->count();
+            if ($totalQuestions > 0) {
+                $offset = ((int)$user->id * $numQuestions) % $totalQuestions; // Calculate offset with wrapping around
+                if ($numQuestions > $totalQuestions) $offset = 0;
+
+                $project = $project->load(
+                    [
+                        'questions' => function ($query) use ($user, $numQuestions, $offset) {
+                            $query->with(
+                                ['answers' => function ($query) use ($user) {
+                                    $query->where('user_id', $user->id);
+                                }]
+                            )->offset($offset)->limit($numQuestions);
+                        }
+                    ]
+                );
+            }
 
 
+
+            if ($project->repeatNum) {
+                $repeatNum = $project->repeatNum;
+                $count = $project->questions->count();
+                // Initialize an empty array to store repeated questions
+                $repeatQ = [];
+                for ($j = 0; $j < $count; $j++) {
+                    $answersCount = $answersCount + count($project->questions[$j]->answers);
+
+                    //add the same question multiple times
+                    for ($i = 0; $i < $repeatNum; $i++) {
+                        // Add the question to the repeated questions array
+                        $additionalData = ["repeatIndex" => $i];
+                        // Merge the original question data with the additional data
+                        $repeatQ[] = array_merge($project->questions[$j]->toArray(), $additionalData);
+                    }
+                }
+                //overwrite relationship and data
+                $project->setRelation('questions', $repeatQ);
+                $project->questions = $repeatQ;
+            }
+        }
+        //if no limit number of question 
+        else {
+
+            $project = $project->load(['questions.answers' => function ($query) {
+                $user = Auth::user();
+                $query->where('user_id', $user->id);
+            }]);
+
+
+            if ($project->repeatNum) {
+                $repeatNum = $project->repeatNum;
+                $count = $project->questions->count();
+                // Initialize an empty array to store repeated questions
+                $repeatQ = [];
+                for ($j = 0; $j < $count; $j++) {
+                    $answersCount = $answersCount + count($project->questions[$j]->answers);
+
+                    $question = $project->questions[$j];
+                    $answerList = $question->answers;
+                    //add the same question multiple times
+                    for ($i = 0; $i < $repeatNum; $i++) {
+                        $answer = $answerList->filter(function ($answer) use ($i) {
+                            return $answer->repeatIndex == $i;
+                        })->values()->all();
+                        //overwrite relationship and data
+                        $question->setRelation('answers', $answer);
+                        $question->answers = $answer;
+                        $question->repeatIndex = $i;
+                        // Add the question to the repeated questions array
+                        $repeatQ[] = $question;
+                    }
+                }
+                //overwrite relationship and data
+                $project->setRelation('questions', $repeatQ);
+                $project->questions = $repeatQ;
+            }
+        }
+        $project->totalQuestions = count($project->questions);
+        $project->answersCount = $answersCount;
         return Inertia('Project/testPage', [
             //load project with questions and answer
             'project' => $project

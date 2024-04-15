@@ -49,7 +49,6 @@
                                                 class="mt-1 block w-full"
                                                 v-model="form.name"
                                                 required
-                                                autofocus
                                                 autocomplete="username"
                                             />
                                             <InputError
@@ -133,9 +132,7 @@
                                     type="checkbox"
                                     class="checkbox"
                                     id="checkChile"
-                                    @change="
-                                        updateSelectList(group.id, $event)
-                                    "
+                                    @change="updateSelectList(group.id, $event)"
                                 />
                             </TableCell>
                             <TableCell class="text-center">
@@ -205,7 +202,7 @@ const form = useForm({
     created_by: parseInt(page.props.auth.user.id),
 });
 //Props $ Emit
-const props =  defineProps({groups: Object});
+const props = defineProps({ groups: Object });
 
 //Computed
 const dataFilled = computed(() => {
@@ -276,15 +273,17 @@ const GoDetail = (id) => {
     router.get("/group/detail/" + id);
 };
 const deleteGroup = () => {
-    if (confirm("Press OK to delete selected group!") == true) {
-        router.delete("/group/delete", {
-            data: {
-                groups: selectList.value,
-            },
-        });
-        selectList.value = []
-        $('input[id="checkPR"]').prop("checked", false);
-        showAll.value = true;
+    if (selectList.value.length != 0) {
+        if (confirm("Press OK to delete selected group!") == true) {
+            router.delete("/group/delete", {
+                data: {
+                    groups: selectList.value,
+                },
+            });
+            selectList.value = [];
+            $('input[id="checkPR"]').prop("checked", false);
+            showAll.value = true;
+        }
     }
 };
 </script>
